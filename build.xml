@@ -9,6 +9,11 @@
 	<property name="test.classes.dir" value="${build.dir}/test-classes" />
 	<property name="jar.dir" value="${build.dir}/jar" />
 	<property name="doc.dir" value="${basedir}/documentation/html/api" />
+	<path id="lib">
+		<fileset dir="${basedir}/lib">
+			<include name="*.jar" />
+		</fileset>
+	</path>
 	<path id="junit.path">
 		<pathelement location="/usr/share/java/junit4.jar" />
 	</path>
@@ -25,7 +30,9 @@
 
 	<target name="compile" description="compile source to bytecode">
 		<mkdir dir="${classes.dir}" />
-		<javac srcdir="${src.dir}" destdir="${classes.dir}" includeantruntime="false" />
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" includeantruntime="false">
+			<classpath refid="lib" />
+		</javac>
 	</target>
 
 	<target name="jar" depends="compile" description="packages code into jar">

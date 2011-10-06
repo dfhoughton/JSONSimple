@@ -12,8 +12,10 @@ import org.junit.runners.Suite;
  * 
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ //
-BasicConversions.class,//
+@Suite.SuiteClasses({
+//
+		BasicConversions.class,//
+		StringToObject.class,//
 })
 public class AllTests {
 }

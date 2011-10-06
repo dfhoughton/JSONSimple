@@ -35,6 +35,7 @@ public class Eyeball {
 		subMap.put("B", "");
 		subMap.put("C", "\n\t\f\b\\/\r£¶Æβ\"");
 		System.out.println(Converter.convert(map));
+		System.out.println(Converter.g.describe());
 	}
 
 }

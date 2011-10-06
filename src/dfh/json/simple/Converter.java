@@ -1,8 +1,16 @@
 package dfh.json.simple;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import dfh.grammar.Grammar;
+import dfh.grammar.GrammarException;
+import dfh.grammar.Match;
+import dfh.grammar.MatchTest;
 
 /**
  * Converts between JSON and collections.
@@ -13,6 +21,41 @@ import java.util.Map.Entry;
  * 
  */
 public class Converter {
+	/**
+	 * BNF grammar for JSON objects
+	 */
+	public static final String[] JSON_RULES = {
+			//
+			"   ROOT = <obj>",//
+			"    obj = <s> '{' <s> [ <string> <s> ':' <s> <value> [ <s>  ',' <s> <string> <s> ':' <s> <value> <s> ]*+ <s> ]?+ '}' <s>",//
+			"  array = '[' <s> [ <value> [ <s> ',' <s> <value> ]*+ <s> ]?+ ']'",//
+			"  value = <string> | <obj> | <boolean> | <null> | <array> | <number>",//
+			" string = '\"' [ '\\\\' <sc> | <nsc> ]*+ '\"'",//
+			"boolean = 'true' | 'false'",//
+			"     sc = <ec> | <ue>",//
+			"     ec = /[rtfbn\\\\\\/\"]/",//
+			"    nsc = /[^\\\\\\p{Cc}\"]/",//
+			"   null = 'null'",//
+			" number = /-?+(?:0|[1-9]\\d*+)(\\.\\d++)?+([eE][+-]?+\\d++)?+/",//
+			"      s = /\\s*+/",//
+			"     ue = /u[0-9a-fA-F]{4}/",//
+	};
+	/**
+	 * {@link Grammar} generated from {@link #JSON_RULES}
+	 */
+	public static Grammar g;
+	static {
+		try {
+			g = new Grammar(JSON_RULES);
+		} catch (GrammarException e) {
+			e.printStackTrace();
+			System.exit(1);
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+	}
+
 	private Converter() {
 	}
 
@@ -21,6 +64,135 @@ public class Converter {
 		StringBuilder b = new StringBuilder();
 		convert(collection, b);
 		return b.toString();
+	}
+
+	public static Map<String, Object> convert(String json)
+			throws JSONSimpleException {
+		Match m = g.matches(json).match();
+		if (m == null)
+			throw new JSONSimpleException("cannot parse " + json); // TODO make
+																	// error
+																	// more
+																	// explanatory
+		return convertObject(m, json);
+	}
+
+	private static Map<String, Object> convertObject(final Match m, String json) {
+		Map<String, Object> map = new LinkedHashMap<String, Object>();
+		String key = null;
+		for (Match child : m.getClosestDescendants(new MatchTest() {
+			@Override
+			public boolean test(Match m) {
+				return m.hasLabel("string") || m.hasLabel("value");
+			}
+		})) {
+			if (child.hasLabel("string"))
+				key = convertString(child, json);
+			else {
+				Object o = convertValue(child, json);
+				map.put(key, o);
+			}
+		}
+		return map;
+	}
+
+	private static Object convertValue(Match m, String json) {
+		// value = <string> | <obj> | <boolean> | <null> | <array> |
+		// <number>",//
+		Match child = m.children()[0];
+		if (child.hasLabel("string")) {
+			return convertString(child, json);
+		} else if (child.hasLabel("number")) {
+			return convertNumber(child, json);
+		} else if (child.hasLabel("obj")) {
+			return convertObject(child, json);
+		} else if (child.hasLabel("boolean")) {
+			return convertBoolean(child, json);
+		} else if (child.hasLabel("array")) {
+			return convertArray(child, json);
+		} else
+			return null;
+	}
+
+	private static Object convertArray(Match m, String json) {
+		List<Object> list = new ArrayList<Object>();
+		for (Match child : m.getClosestDescendants(new MatchTest() {
+			@Override
+			public boolean test(Match o) {
+				return o.hasLabel("value");
+			}
+		})) {
+			list.add(convertValue(child, json));
+		}
+		return list;
+	}
+
+	private static Object convertBoolean(Match child, String json) {
+		return new Boolean(json.substring(child.start(), child.end()));
+	}
+
+	private static Object convertNumber(Match child, String json) {
+		return new Double(json.substring(child.start(), child.end()));
+	}
+
+	private static String convertString(Match m, String json) {
+		StringBuilder b = new StringBuilder();
+		for (Match child : m.get(new MatchTest() {
+			@Override
+			public boolean test(Match o) {
+				return o.hasLabel("sc") || o.hasLabel("nsc");
+			}
+		})) {
+			if (child.hasLabel("sc"))
+				convertSpecialCharacter(child, json, b);
+			else
+				convertOrdinaryCharacter(child, json, b);
+		}
+		return b.toString();
+	}
+
+	private static void convertOrdinaryCharacter(Match m, String json,
+			StringBuilder b) {
+		b.append(json.substring(m.start(), m.end()));
+	}
+
+	private static void convertSpecialCharacter(Match m, String json,
+			StringBuilder b) {
+		Match child = m.children()[0];
+		String s = json.substring(child.start(), child.end());
+		if (child.hasLabel("ue")) {
+			char c = (char) Integer.parseInt(s.substring(1), 16);
+			b.append(c);
+		} else {
+			switch (s.charAt(0)) {
+			case 'r':
+				b.append('\r');
+				break;
+			case 't':
+				b.append('\t');
+				break;
+			case 'b':
+				b.append('\b');
+				break;
+			case 'n':
+				b.append('\n');
+				break;
+			case 'f':
+				b.append('\f');
+				break;
+			case '\\':
+				b.append('\\');
+				break;
+			case '"':
+				b.append('"');
+				break;
+			case '/':
+				b.append('/');
+				break;
+			default:
+				throw new RuntimeException("grammar out of sync with conversion code; unexpected escaped character " + s);
+			}
+		}
 	}
 
 	private static void convert(Map<String, Object> collection, StringBuilder b)
