@@ -12,8 +12,8 @@ import org.junit.runners.Suite;
  * 
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({
-//
+@Suite.SuiteClasses({ //
+BasicConversions.class,//
 })
 public class AllTests {
 }
