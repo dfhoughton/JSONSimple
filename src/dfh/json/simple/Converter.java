@@ -2,6 +2,7 @@ package dfh.json.simple;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +60,14 @@ public class Converter {
 	private Converter() {
 	}
 
+	/**
+	 * Convert Java {@link Collection} object to JSON string.
+	 * 
+	 * @param collection
+	 *            {@link Map} from strings to objects
+	 * @return
+	 * @throws JSONSimpleException
+	 */
 	public static String convert(Map<String, Object> collection)
 			throws JSONSimpleException {
 		StringBuilder b = new StringBuilder();
@@ -66,6 +75,13 @@ public class Converter {
 		return b.toString();
 	}
 
+	/**
+	 * Converts a JSON string to a map from strings to objects.
+	 * 
+	 * @param json
+	 * @return
+	 * @throws JSONSimpleException
+	 */
 	public static Map<String, Object> convert(String json)
 			throws JSONSimpleException {
 		Match m = g.matches(json).match();
@@ -190,7 +206,9 @@ public class Converter {
 				b.append('/');
 				break;
 			default:
-				throw new RuntimeException("grammar out of sync with conversion code; unexpected escaped character " + s);
+				throw new RuntimeException(
+						"grammar out of sync with conversion code; unexpected escaped character "
+								+ s);
 			}
 		}
 	}
