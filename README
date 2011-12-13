@@ -4,4 +4,5 @@ JSONSimple
 David Houghton
 5 October 2011
 
-This is a trivial Java library for converting between JSON and Java collections.
+This is a tiny Java library for converting between JSON and Java collections.
+It is dependent on dfh.grammar.

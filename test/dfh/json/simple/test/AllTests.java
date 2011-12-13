@@ -16,6 +16,7 @@ import org.junit.runners.Suite;
 //
 		BasicConversions.class,//
 		StringToObject.class,//
+		ParseErrors.class,//
 })
 public class AllTests {
 }

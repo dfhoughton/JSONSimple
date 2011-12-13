@@ -1,6 +1,5 @@
 package dfh.json.simple;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -9,9 +8,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import dfh.grammar.Grammar;
-import dfh.grammar.GrammarException;
 import dfh.grammar.Match;
 import dfh.grammar.MatchTest;
+import dfh.grammar.Matcher;
+import dfh.grammar.Options;
 
 /**
  * Converts between JSON and collections.
@@ -44,18 +44,7 @@ public class Converter {
 	/**
 	 * {@link Grammar} generated from {@link #JSON_RULES}
 	 */
-	public static Grammar g;
-	static {
-		try {
-			g = new Grammar(JSON_RULES);
-		} catch (GrammarException e) {
-			e.printStackTrace();
-			System.exit(1);
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-	}
+	public static Grammar g = new Grammar(JSON_RULES);
 
 	private Converter() {
 	}
@@ -84,13 +73,29 @@ public class Converter {
 	 */
 	public static Map<String, Object> convert(String json)
 			throws JSONSimpleException {
-		Match m = g.matches(json).match();
-		if (m == null)
-			throw new JSONSimpleException("cannot parse " + json); // TODO make
-																	// error
-																	// more
-																	// explanatory
-		return convertObject(m, json);
+		Matcher m = g.matches(json,
+				new Options().study(false).keepRightmost(true));
+		Match n = m.match();
+		if (n == null) {
+			n = m.rightmostMatch();
+			if (n == null)
+				throw new JSONSimpleException("failed to parse \"" + json
+						+ "\" as JSON");
+			int start = Math.max(0, n.end() - 20), end = Math.min(
+					json.length(), n.end() + 20);
+			StringBuilder b = new StringBuilder("parsing failed at offset ");
+			b.append(n.end()).append(" marked by '<HERE>': ");
+			if (start > 0)
+				b.append("...");
+			b.append(json.substring(start, n.end()));
+			b.append("<HERE>");
+			b.append(json.substring(n.end(), end));
+			if (end < json.length())
+				b.append("...");
+			throw new JSONSimpleException(b.toString());
+		}
+
+		return convertObject(n, json);
 	}
 
 	private static Map<String, Object> convertObject(final Match m, String json) {
