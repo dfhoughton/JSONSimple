@@ -98,15 +98,17 @@ public class Converter {
 		return convertObject(n, json);
 	}
 
+	private static final MatchTest stringOrValue = new MatchTest() {
+		@Override
+		public boolean test(Match m) {
+			return m.hasLabel("string") || m.hasLabel("value");
+		}
+	};
+
 	private static Map<String, Object> convertObject(final Match m, String json) {
 		Map<String, Object> map = new LinkedHashMap<String, Object>();
 		String key = null;
-		for (Match child : m.getClosestDescendants(new MatchTest() {
-			@Override
-			public boolean test(Match m) {
-				return m.hasLabel("string") || m.hasLabel("value");
-			}
-		})) {
+		for (Match child : m.getClosestDescendants(stringOrValue)) {
 			if (child.hasLabel("string"))
 				key = convertString(child, json);
 			else {
@@ -118,8 +120,6 @@ public class Converter {
 	}
 
 	private static Object convertValue(Match m, String json) {
-		// value = <string> | <obj> | <boolean> | <null> | <array> |
-		// <number>",//
 		Match child = m.children()[0];
 		if (child.hasLabel("string")) {
 			return convertString(child, json);
@@ -135,14 +135,16 @@ public class Converter {
 			return null;
 	}
 
+	private static final MatchTest valueTest = new MatchTest() {
+		@Override
+		public boolean test(Match o) {
+			return o.hasLabel("value");
+		}
+	};
+
 	private static Object convertArray(Match m, String json) {
 		List<Object> list = new ArrayList<Object>();
-		for (Match child : m.getClosestDescendants(new MatchTest() {
-			@Override
-			public boolean test(Match o) {
-				return o.hasLabel("value");
-			}
-		})) {
+		for (Match child : m.getClosestDescendants(valueTest)) {
 			list.add(convertValue(child, json));
 		}
 		return list;
@@ -156,14 +158,16 @@ public class Converter {
 		return new Double(json.substring(child.start(), child.end()));
 	}
 
+	private static final MatchTest scOrNsc = new MatchTest() {
+		@Override
+		public boolean test(Match o) {
+			return o.hasLabel("sc") || o.hasLabel("nsc");
+		}
+	};
+
 	private static String convertString(Match m, String json) {
 		StringBuilder b = new StringBuilder();
-		for (Match child : m.get(new MatchTest() {
-			@Override
-			public boolean test(Match o) {
-				return o.hasLabel("sc") || o.hasLabel("nsc");
-			}
-		})) {
+		for (Match child : m.get(scOrNsc)) {
 			if (child.hasLabel("sc"))
 				convertSpecialCharacter(child, json, b);
 			else
