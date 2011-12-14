@@ -12,6 +12,7 @@ import dfh.grammar.Match;
 import dfh.grammar.MatchTest;
 import dfh.grammar.Matcher;
 import dfh.grammar.Options;
+import dfh.grammar.util.Dotify;
 
 /**
  * Converts between JSON and collections.
@@ -76,7 +77,7 @@ public class Converter {
 	 * @return JSON string
 	 * @throws JSONSimpleException
 	 */
-	public static String convert(Collection<Object> collection)
+	public static <K extends Collection<?>> String convert(K collection)
 			throws JSONSimpleException {
 		StringBuilder b = new StringBuilder();
 		convert(new ArrayList<Object>(collection), b);
@@ -131,6 +132,21 @@ public class Converter {
 		}
 		throw new JSONSimpleException(
 				"LOGIC ERROR: parsable string failed to parse to either object or array");
+	}
+
+	/**
+	 * Cleans out unnecessary whitespace from JSON string.
+	 * 
+	 * @param json
+	 * @return json with unnecessary whitespace removed
+	 * @throws JSONSimpleException
+	 */
+	@SuppressWarnings("unchecked")
+	public static String compress(String json) throws JSONSimpleException {
+		Object obj = convert(json);
+		if (obj instanceof Map<?, ?>)
+			return convert((Map<String, Object>) obj);
+		return convert((List<Object>) obj);
 	}
 
 	private static final MatchTest stringOrValue = new MatchTest() {
@@ -191,6 +207,7 @@ public class Converter {
 
 	private static Object convertNumber(Match child) {
 		child = child.children()[0];
+		System.out.println(Dotify.dot(child));
 		return child.hasLabel("int") ? new Integer(child.group()) : new Double(
 				child.group());
 	}
