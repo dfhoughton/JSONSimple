@@ -16,7 +16,10 @@ public class StringToObject {
 	public void numberTest1() {
 		try {
 			double foo = 1.0;
-			Map<String, Object> map = Converter.convert("{\"a\":" + foo + "}");
+			Object o = Converter.convert("{\"a\":" + foo + "}");
+			assertTrue("parsed to map", o instanceof Map<?, ?>);
+			@SuppressWarnings("unchecked")
+			Map<String, Object> map = (Map<String, Object>) o;
 			Double d = (Double) map.get("a");
 			assertTrue("", d.doubleValue() == foo);
 		} catch (JSONSimpleException e) {
@@ -28,7 +31,10 @@ public class StringToObject {
 	public void numberTestE() {
 		try {
 			double foo = 1e14;
-			Map<String, Object> map = Converter.convert("{\"a\":" + foo + "}");
+			Object o = Converter.convert("{\"a\":" + foo + "}");
+			assertTrue("parsed to map", o instanceof Map<?, ?>);
+			@SuppressWarnings("unchecked")
+			Map<String, Object> map = (Map<String, Object>) o;
 			Double d = (Double) map.get("a");
 			assertTrue("", d.doubleValue() == foo);
 		} catch (JSONSimpleException e) {
@@ -39,7 +45,10 @@ public class StringToObject {
 	@Test
 	public void unicodeTest() {
 		try {
-			Map<String, Object> map = Converter.convert("{\"a\":\"\\u0950\"}");
+			Object o = Converter.convert("{\"a\":\"\\u0950\"}");
+			assertTrue("parsed to map", o instanceof Map<?, ?>);
+			@SuppressWarnings("unchecked")
+			Map<String, Object> map = (Map<String, Object>) o;
 			String s = (String) map.get("a");
 			assertTrue("", s.charAt(0) == 'ॐ');
 		} catch (JSONSimpleException e) {
@@ -50,8 +59,11 @@ public class StringToObject {
 	@Test
 	public void escapeTest() {
 		try {
-			Map<String, Object> map = Converter
+			Object o = Converter
 					.convert("{\"a\":\"\\r\\n\\t\\b\\f\\\\\\/\\\"\"}");
+			assertTrue("parsed to map", o instanceof Map<?, ?>);
+			@SuppressWarnings("unchecked")
+			Map<String, Object> map = (Map<String, Object>) o;
 			String s = (String) map.get("a");
 			assertEquals("got all escapes", s, "\r\n\t\b\f\\/\"");
 		} catch (JSONSimpleException e) {
@@ -62,8 +74,11 @@ public class StringToObject {
 	@Test
 	public void nullTest() {
 		try {
-			Map<String, Object> map = Converter.convert("{\"a\":null}");
-			Object o = map.get("a");
+			Object o = Converter.convert("{\"a\":null}");
+			assertTrue("parsed to map", o instanceof Map<?, ?>);
+			@SuppressWarnings("unchecked")
+			Map<String, Object> map = (Map<String, Object>) o;
+			o = map.get("a");
 			assertNull("'null' translates to null", o);
 		} catch (JSONSimpleException e) {
 			fail(e.getMessage());
@@ -73,7 +88,10 @@ public class StringToObject {
 	@Test
 	public void booleanTrueTest() {
 		try {
-			Map<String, Object> map = Converter.convert("{\"a\":true}");
+			Object o = Converter.convert("{\"a\":true}");
+			assertTrue("parsed to map", o instanceof Map<?, ?>);
+			@SuppressWarnings("unchecked")
+			Map<String, Object> map = (Map<String, Object>) o;
 			Boolean b = (Boolean) map.get("a");
 			assertTrue("'true' translates to true", b);
 		} catch (JSONSimpleException e) {
@@ -84,7 +102,10 @@ public class StringToObject {
 	@Test
 	public void booleanFalseTest() {
 		try {
-			Map<String, Object> map = Converter.convert("{\"a\":false}");
+			Object o = Converter.convert("{\"a\":false}");
+			assertTrue("parsed to map", o instanceof Map<?, ?>);
+			@SuppressWarnings("unchecked")
+			Map<String, Object> map = (Map<String, Object>) o;
 			Boolean b = (Boolean) map.get("a");
 			assertTrue("'false' translates to false", !b);
 		} catch (JSONSimpleException e) {
@@ -95,7 +116,10 @@ public class StringToObject {
 	@Test
 	public void listTest1() {
 		try {
-			Map<String, Object> map = Converter.convert("{\"a\":[]}");
+			Object o = Converter.convert("{\"a\":[]}");
+			assertTrue("parsed to map", o instanceof Map<?, ?>);
+			@SuppressWarnings("unchecked")
+			Map<String, Object> map = (Map<String, Object>) o;
 			@SuppressWarnings("unchecked")
 			List<Object> l = (List<Object>) map.get("a");
 			assertTrue("list is empty", l.isEmpty());
@@ -107,8 +131,10 @@ public class StringToObject {
 	@Test
 	public void listTest2() {
 		try {
-			Map<String, Object> map = Converter
-					.convert("{\"a\":[1,null,false,{}]}");
+			Object o = Converter.convert("{\"a\":[1,null,false,{}]}");
+			assertTrue("parsed to map", o instanceof Map<?, ?>);
+			@SuppressWarnings("unchecked")
+			Map<String, Object> map = (Map<String, Object>) o;
 			@SuppressWarnings("unchecked")
 			List<Object> l = (List<Object>) map.get("a");
 			assertTrue("first entity is 1", 1 == ((Number) l.get(0)).intValue());
@@ -124,7 +150,10 @@ public class StringToObject {
 	@Test
 	public void mapTest1() {
 		try {
-			Map<String, Object> map = Converter.convert("{\"a\":{}}");
+			Object o = Converter.convert("{\"a\":{}}");
+			assertTrue("parsed to map", o instanceof Map<?, ?>);
+			@SuppressWarnings("unchecked")
+			Map<String, Object> map = (Map<String, Object>) o;
 			@SuppressWarnings("unchecked")
 			Map<String, Object> m = (Map<String, Object>) map.get("a");
 			assertTrue("map is empty", m.isEmpty());
@@ -136,8 +165,11 @@ public class StringToObject {
 	@Test
 	public void mapTest2() {
 		try {
-			Map<String, Object> map = Converter
+			Object o = Converter
 					.convert("{\"a\":{\"foo\":null,\"bar\":false}}");
+			assertTrue("parsed to map", o instanceof Map<?, ?>);
+			@SuppressWarnings("unchecked")
+			Map<String, Object> map = (Map<String, Object>) o;
 			@SuppressWarnings("unchecked")
 			Map<String, Object> m = (Map<String, Object>) map.get("a");
 			assertTrue("map has two mappings", m.size() == 2);
@@ -147,4 +179,37 @@ public class StringToObject {
 			fail(e.getMessage());
 		}
 	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void arrayTest1() {
+		try {
+			Object o = Converter.convert("[{\"foo\":null},{\"bar\":false}]");
+			assertTrue("parsed to array", o instanceof List<?>);
+			List<Object> list = (List<Object>) o;
+			assertTrue("array has length 2", list.size() == 2);
+			Map<String, Object> m = (Map<String, Object>) list.get(0);
+			assertTrue("map has one mappings", m.size() == 1);
+			assertTrue("foo is null", m.get("foo") == null);
+			m = (Map<String, Object>) list.get(1);
+			assertTrue("map has one mappings", m.size() == 1);
+			assertTrue("bar is false", !((Boolean) m.get("bar")));
+		} catch (JSONSimpleException e) {
+			fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void arrayTest2() {
+		try {
+			Object o = Converter.convert("[]");
+			assertTrue("parsed to array", o instanceof List<?>);
+			@SuppressWarnings("unchecked")
+			List<Object> list = (List<Object>) o;
+			assertTrue("array is empty", list.isEmpty());
+		} catch (JSONSimpleException e) {
+			fail(e.getMessage());
+		}
+	}
+
 }

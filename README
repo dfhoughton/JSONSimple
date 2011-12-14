@@ -6,3 +6,16 @@ David Houghton
 
 This is a tiny Java library for converting between JSON and Java collections.
 It is dependent on dfh.grammar.
+
+What it can do
+--------------
+
+1. This library can convert a JSON object or array into a Java Map<String, Object>
+or List<Object>.
+
+2. It can convert a Java Map<String, Object>, List<Object>, or Object[], into a
+JSON string.
+
+3. The Objects must be of types Map<String, Object>, List<Object>, Object[], Integer,
+Number, String, Boolean, or null. These are the types that may go in and will come
+out. In the case of Number, the subtype returned will be Double.

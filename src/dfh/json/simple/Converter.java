@@ -27,9 +27,9 @@ public class Converter {
 	 */
 	public static final String[] JSON_RULES = {
 			//
-			"   ROOT = <obj>",//
-			"    obj = <s> '{' <s> [ <string> <s> ':' <s> <value> [ <s>  ',' <s> <string> <s> ':' <s> <value> <s> ]*+ <s> ]?+ '}' <s>",//
-			"  array = '[' <s> [ <value> [ <s> ',' <s> <value> ]*+ <s> ]?+ ']'",//
+			"   ROOT = <s> [{norm} <obj> | <array> ] <s>",//
+			"    obj = '{' <s> [ <string> <s> ':' <s> <value> [ <s>  ',' <s> <string> <s> ':' <s> <value> <s> ]* <s> ]? '}'",//
+			"  array = '[' <s> [ <value> [ <s> ',' <s> <value> ]* <s> ]? ']'",//
 			"  value = <string> | <obj> | <boolean> | <null> | <array> | <number>",//
 			" string = '\"' [ '\\\\' <sc> | <nsc> ]*+ '\"'",//
 			"boolean = 'true' | 'false'",//
@@ -37,7 +37,9 @@ public class Converter {
 			"     ec = /[rtfbn\\\\\\/\"]/",//
 			"    nsc = /[^\\\\\\p{Cc}\"]/",//
 			"   null = 'null'",//
-			" number = /-?+(?:0|[1-9]\\d*+)(\\.\\d++)?+([eE][+-]?+\\d++)?+/",//
+			" number = <int> | <double>",//
+			"    int = /-?+(?:0|[1-9]\\d*+)/",//
+			" double = /-?+(?:0|[1-9]\\d*+)(\\.\\d++)?+([eE][+-]?+\\d++)?+/",//
 			"      s = /\\s*+/",//
 			"     ue = /u[0-9a-fA-F]{4}/",//
 	};
@@ -50,29 +52,54 @@ public class Converter {
 	}
 
 	/**
-	 * Convert Java {@link Collection} object to JSON string.
+	 * Convert Java {@link Collection} object to JSON string representing an
+	 * object.
 	 * 
-	 * @param collection
+	 * @param map
 	 *            {@link Map} from strings to objects
-	 * @return
+	 * @return JSON string
 	 * @throws JSONSimpleException
 	 */
-	public static String convert(Map<String, Object> collection)
+	public static String convert(Map<String, Object> map)
 			throws JSONSimpleException {
 		StringBuilder b = new StringBuilder();
-		convert(collection, b);
+		convert(map, b);
 		return b.toString();
 	}
 
 	/**
-	 * Converts a JSON string to a map from strings to objects.
+	 * Convert Java {@link Collection} object to JSON string representing a
+	 * list.
 	 * 
-	 * @param json
-	 * @return
+	 * @param collection
+	 *            {@link Collection} of objects
+	 * @return JSON string
 	 * @throws JSONSimpleException
 	 */
-	public static Map<String, Object> convert(String json)
+	public static String convert(Collection<Object> collection)
 			throws JSONSimpleException {
+		StringBuilder b = new StringBuilder();
+		convert(new ArrayList<Object>(collection), b);
+		return b.toString();
+	}
+
+	private static final MatchTest normTest = new MatchTest() {
+		@Override
+		public boolean test(Match m) {
+			return m.hasLabel("norm");
+		}
+	};
+
+	/**
+	 * Converts a JSON string to either a map from strings to objects or a list
+	 * of objects.
+	 * 
+	 * @param json
+	 *            string to parse
+	 * @return Java collection, either a map or a list
+	 * @throws JSONSimpleException
+	 */
+	public static Object convert(String json) throws JSONSimpleException {
 		Matcher m = g.matches(json,
 				new Options().study(false).keepRightmost(true));
 		Match n = m.match();
@@ -95,7 +122,15 @@ public class Converter {
 			throw new JSONSimpleException(b.toString());
 		}
 
-		return convertObject(n, json);
+		n = n.choose(normTest);
+		for (Match child : n.children()) {
+			if (child.hasLabel("array"))
+				return convertArray(child, json);
+			else if (child.hasLabel("obj"))
+				return convertObject(child, json);
+		}
+		throw new JSONSimpleException(
+				"LOGIC ERROR: parsable string failed to parse to either object or array");
 	}
 
 	private static final MatchTest stringOrValue = new MatchTest() {
@@ -124,11 +159,11 @@ public class Converter {
 		if (child.hasLabel("string")) {
 			return convertString(child, json);
 		} else if (child.hasLabel("number")) {
-			return convertNumber(child, json);
+			return convertNumber(child);
 		} else if (child.hasLabel("obj")) {
 			return convertObject(child, json);
 		} else if (child.hasLabel("boolean")) {
-			return convertBoolean(child, json);
+			return convertBoolean(child);
 		} else if (child.hasLabel("array")) {
 			return convertArray(child, json);
 		} else
@@ -150,12 +185,14 @@ public class Converter {
 		return list;
 	}
 
-	private static Object convertBoolean(Match child, String json) {
-		return new Boolean(json.substring(child.start(), child.end()));
+	private static Object convertBoolean(Match child) {
+		return new Boolean(child.group());
 	}
 
-	private static Object convertNumber(Match child, String json) {
-		return new Double(json.substring(child.start(), child.end()));
+	private static Object convertNumber(Match child) {
+		child = child.children()[0];
+		return child.hasLabel("int") ? new Integer(child.group()) : new Double(
+				child.group());
 	}
 
 	private static final MatchTest scOrNsc = new MatchTest() {
@@ -222,11 +259,11 @@ public class Converter {
 		}
 	}
 
-	private static void convert(Map<String, Object> collection, StringBuilder b)
+	private static void convert(Map<String, Object> map, StringBuilder b)
 			throws JSONSimpleException {
 		b.append('{');
 		boolean nonInitial = false;
-		for (Entry<String, Object> e : collection.entrySet()) {
+		for (Entry<String, Object> e : map.entrySet()) {
 			if (nonInitial)
 				b.append(',');
 			else
