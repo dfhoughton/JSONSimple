@@ -207,7 +207,6 @@ public class Converter {
 
 	private static Object convertNumber(Match child) {
 		child = child.children()[0];
-		System.out.println(Dotify.dot(child));
 		return child.hasLabel("int") ? new Integer(child.group()) : new Double(
 				child.group());
 	}
