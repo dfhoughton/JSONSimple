@@ -207,8 +207,10 @@ public class Converter {
 
 	private static Object convertNumber(Match child) {
 		child = child.children()[0];
-		return child.hasLabel("int") ? new Integer(child.group()) : new Double(
-				child.group());
+		if (child.hasLabel("int"))
+			return new Integer(child.group());
+		else
+			return new Double(child.group());
 	}
 
 	private static final MatchTest scOrNsc = new MatchTest() {
