@@ -1,3 +1,4 @@
 '*' marks done items; '.' marks items on wish list
 
 * use Grammar to convert JSON strings back into POJOs
+. convert everywhere to cached MatchTest objects
