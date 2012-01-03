@@ -12,7 +12,6 @@ import dfh.grammar.Match;
 import dfh.grammar.MatchTest;
 import dfh.grammar.Matcher;
 import dfh.grammar.Options;
-import dfh.grammar.util.Dotify;
 
 /**
  * Converts between JSON and collections.
@@ -123,7 +122,7 @@ public class Converter {
 			throw new JSONSimpleException(b.toString());
 		}
 
-		n = n.choose(normTest);
+		n = n.first(normTest);
 		for (Match child : n.children()) {
 			if (child.hasLabel("array"))
 				return convertArray(child, json);
@@ -159,7 +158,7 @@ public class Converter {
 	private static Map<String, Object> convertObject(final Match m, String json) {
 		Map<String, Object> map = new LinkedHashMap<String, Object>();
 		String key = null;
-		for (Match child : m.getClosestDescendants(stringOrValue)) {
+		for (Match child : m.closest(stringOrValue)) {
 			if (child.hasLabel("string"))
 				key = convertString(child, json);
 			else {
@@ -195,7 +194,7 @@ public class Converter {
 
 	private static Object convertArray(Match m, String json) {
 		List<Object> list = new ArrayList<Object>();
-		for (Match child : m.getClosestDescendants(valueTest)) {
+		for (Match child : m.closest(valueTest)) {
 			list.add(convertValue(child, json));
 		}
 		return list;
