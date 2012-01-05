@@ -48,6 +48,11 @@ public class Converter {
 	 */
 	public static Grammar g = new Grammar(JSON_RULES);
 
+	/**
+	 * Default indentation size in spaces when calling {@link #pretty(String)}.
+	 */
+	public static final int DEFAULT_INDENTATION = 3;
+
 	private Converter() {
 	}
 
@@ -62,8 +67,25 @@ public class Converter {
 	 */
 	public static String convert(Map<String, Object> map)
 			throws JSONSimpleException {
+		return convert(map, -1);
+	}
+
+	/**
+	 * Convert Java {@link Collection} object to JSON string representing an
+	 * object. Nested values are indented.
+	 * 
+	 * @param map
+	 *            {@link Map} from strings to objects
+	 * @param indent
+	 *            amount nested values are to be indented relative to their
+	 *            context
+	 * @return JSON string
+	 * @throws JSONSimpleException
+	 */
+	public static String convert(Map<String, Object> map, int indent)
+			throws JSONSimpleException {
 		StringBuilder b = new StringBuilder();
-		convert(map, b);
+		convert(map, b, indent, 0);
 		return b.toString();
 	}
 
@@ -78,8 +100,54 @@ public class Converter {
 	 */
 	public static <K extends Collection<?>> String convert(K collection)
 			throws JSONSimpleException {
+		return convert(collection, -1);
+	}
+
+	/**
+	 * Convert Java object array to JSON string representing a list.
+	 * 
+	 * @param list
+	 *            array of objects
+	 * @return JSON string
+	 * @throws JSONSimpleException
+	 */
+	public static String convert(Object[] list) throws JSONSimpleException {
+		return convert(list, -1);
+	}
+
+	/**
+	 * Convert Java object array to JSON string representing a list, indenting
+	 * nested values.
+	 * 
+	 * @param list
+	 *            array of objects
+	 * @param indent
+	 *            amount to indent nested values
+	 * @return JSON string
+	 * @throws JSONSimpleException
+	 */
+	public static String convert(Object[] list, int indent)
+			throws JSONSimpleException {
 		StringBuilder b = new StringBuilder();
-		convert(new ArrayList<Object>(collection), b);
+		convert(list, b, indent, 0);
+		return b.toString();
+	}
+
+	/**
+	 * Convert Java {@link Collection} object to JSON string representing a
+	 * list. Nested objects are indented.
+	 * 
+	 * @param collection
+	 *            {@link Collection} of objects
+	 * @param indent
+	 *            number of spaces to indent nested values
+	 * @return JSON string
+	 * @throws JSONSimpleException
+	 */
+	public static <K extends Collection<?>> String convert(K collection,
+			int indent) throws JSONSimpleException {
+		StringBuilder b = new StringBuilder();
+		convert(new ArrayList<Object>(collection), b, indent, 0);
 		return b.toString();
 	}
 
@@ -146,6 +214,38 @@ public class Converter {
 		if (obj instanceof Map<?, ?>)
 			return convert((Map<String, Object>) obj);
 		return convert((List<Object>) obj);
+	}
+
+	/**
+	 * Normalizes whitespace in JSON string, indenting the contents of lists and
+	 * maps appropriately. The indentation size is given by
+	 * {@link #DEFAULT_INDENTATION}.
+	 * 
+	 * @param json
+	 * @return json with unnecessary whitespace removed
+	 * @throws JSONSimpleException
+	 */
+	public static String pretty(String json) throws JSONSimpleException {
+		return pretty(json, DEFAULT_INDENTATION);
+	}
+
+	/**
+	 * Normalizes whitespace in JSON string, indenting the contents of lists and
+	 * maps appropriately.
+	 * 
+	 * @param json
+	 * @param indent
+	 *            indentation size in spaces
+	 * @return json with unnecessary whitespace removed
+	 * @throws JSONSimpleException
+	 */
+	@SuppressWarnings("unchecked")
+	public static String pretty(String json, int indent)
+			throws JSONSimpleException {
+		Object obj = convert(json);
+		if (obj instanceof Map<?, ?>)
+			return convert((Map<String, Object>) obj, indent);
+		return convert((List<Object>) obj, indent);
 	}
 
 	private static final MatchTest stringOrValue = new MatchTest() {
@@ -276,19 +376,23 @@ public class Converter {
 		}
 	}
 
-	private static void convert(Map<String, Object> map, StringBuilder b)
-			throws JSONSimpleException {
+	private static void convert(Map<String, Object> map, StringBuilder b,
+			int indent, int margin) throws JSONSimpleException {
+		if (margin > 0)
+			newline(b, indent, margin);
 		b.append('{');
 		boolean nonInitial = false;
 		for (Entry<String, Object> e : map.entrySet()) {
+			newline(b, indent, margin + 1);
 			if (nonInitial)
 				b.append(',');
 			else
 				nonInitial = true;
 			convert(e.getKey(), b);
 			b.append(':');
-			convert(e.getValue(), b);
+			convert(e.getValue(), b, indent, margin + 1);
 		}
+		newline(b, indent, margin);
 		b.append('}');
 	}
 
@@ -333,8 +437,8 @@ public class Converter {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static void convert(Object value, StringBuilder b)
-			throws JSONSimpleException {
+	private static void convert(Object value, StringBuilder b, int indent,
+			int margin) throws JSONSimpleException {
 		if (value == null)
 			b.append("null");
 		else if (value instanceof String)
@@ -342,11 +446,11 @@ public class Converter {
 		else if (value instanceof Number)
 			convert((Number) value, b);
 		else if (value instanceof Object[])
-			convert((Object[]) value, b);
+			convert((Object[]) value, b, indent, margin);
 		else if (value instanceof List<?>)
-			convert((List<Object>) value, b);
+			convert((List<Object>) value, b, indent, margin);
 		else if (value instanceof Map<?, ?>)
-			convert((Map<String, Object>) value, b);
+			convert((Map<String, Object>) value, b, indent, margin);
 		else if (value instanceof Boolean)
 			b.append(value.toString());
 		else
@@ -358,31 +462,56 @@ public class Converter {
 		b.append(n.toString());
 	}
 
-	private static void convert(Object[] array, StringBuilder b)
-			throws JSONSimpleException {
+	private static void convert(Object[] array, StringBuilder b, int indent,
+			int margin) throws JSONSimpleException {
+		if (margin > 0)
+			newline(b, indent, margin);
 		b.append('[');
 		boolean nonInitial = false;
 		for (Object o : array) {
+			newline(b, indent, margin + 1);
 			if (nonInitial)
 				b.append(',');
 			else
 				nonInitial = true;
-			convert(o, b);
+			convert(o, b, indent, margin + 1);
 		}
+		newline(b, indent, margin);
 		b.append(']');
 	}
 
-	private static void convert(List<Object> list, StringBuilder b)
-			throws JSONSimpleException {
+	private static void convert(List<Object> list, StringBuilder b, int indent,
+			int margin) throws JSONSimpleException {
+		if (margin > 0)
+			newline(b, indent, margin);
 		b.append('[');
 		boolean nonInitial = false;
 		for (Object o : list) {
+			newline(b, indent, margin + 1);
 			if (nonInitial)
 				b.append(',');
 			else
 				nonInitial = true;
-			convert(o, b);
+			convert(o, b, indent, margin + 1);
 		}
+		newline(b, indent, margin);
 		b.append(']');
+	}
+
+	/**
+	 * Adds an indent of the appropriate size for pretty-printing.
+	 * 
+	 * @param b
+	 * @param indent
+	 * @param margin
+	 */
+	private static void newline(StringBuilder b, int indent, int margin) {
+		if (indent < 0)
+			return;
+		b.append('\n');
+		for (int i = 0; i < margin; i++) {
+			for (int j = 0; j < indent; j++)
+				b.append(' ');
+		}
 	}
 }
