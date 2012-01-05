@@ -78,7 +78,7 @@ public class Converter {
 	 *            {@link Map} from strings to objects
 	 * @param indent
 	 *            amount nested values are to be indented relative to their
-	 *            context
+	 *            context; if this is less than 0, there will be no indentation
 	 * @return JSON string
 	 * @throws JSONSimpleException
 	 */
@@ -122,7 +122,8 @@ public class Converter {
 	 * @param list
 	 *            array of objects
 	 * @param indent
-	 *            amount to indent nested values
+	 *            amount to indent nested values; if this is less than 0, there
+	 *            will be no indentation
 	 * @return JSON string
 	 * @throws JSONSimpleException
 	 */
@@ -140,7 +141,8 @@ public class Converter {
 	 * @param collection
 	 *            {@link Collection} of objects
 	 * @param indent
-	 *            number of spaces to indent nested values
+	 *            number of spaces to indent nested values; if this is less than
+	 *            0, there will be no indentation
 	 * @return JSON string
 	 * @throws JSONSimpleException
 	 */
@@ -235,7 +237,8 @@ public class Converter {
 	 * 
 	 * @param json
 	 * @param indent
-	 *            indentation size in spaces
+	 *            indentation size in spaces; if this is less than 0, there will
+	 *            be no indentation
 	 * @return json with unnecessary whitespace removed
 	 * @throws JSONSimpleException
 	 */
