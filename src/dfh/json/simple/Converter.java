@@ -389,8 +389,12 @@ public class Converter {
 			else
 				nonInitial = true;
 			convert(e.getKey(), b);
+			if (indent > -1)
+				b.append(' ');
 			b.append(':');
-			convert(e.getValue(), b, indent, margin + 1);
+			if (indent > -1)
+				b.append(' ');
+			convert(e.getValue(), b, indent, margin + 2);
 		}
 		newline(b, indent, margin);
 		b.append('}');

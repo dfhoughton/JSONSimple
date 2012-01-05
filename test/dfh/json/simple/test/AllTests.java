@@ -18,6 +18,7 @@ import org.junit.runners.Suite;
 		StringToObject.class,//
 		ParseErrors.class,//
 		CompressTest.class,//
+		PrettyTest.class,//
 })
 public class AllTests {
 }
