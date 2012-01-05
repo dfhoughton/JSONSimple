@@ -1,4 +1,6 @@
 0.23
+  * added pretty printing
+  * added capability to convert Object[] as well as List<Object>
 
 0.22, 3 January 2012
   * updated dfh.grammar
