@@ -165,4 +165,47 @@ public class BasicConversions {
 		}
 	}
 
+	@Test
+	public void mainArrayConversionEmpty() {
+		Object[] list = new Object[0];
+		try {
+			assertEquals("converted empty array", "[]", Converter.convert(list));
+		} catch (JSONSimpleException e) {
+			fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void mainArrayConversionFull() {
+		Object[] list = { "a" };
+		try {
+			assertEquals("single String array", "[\"a\"]",
+					Converter.convert(list));
+		} catch (JSONSimpleException e) {
+			fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void mainListConversionEmpty() {
+		List<Object> list = new ArrayList<Object>(0);
+		try {
+			assertEquals("converted empty list", "[]", Converter.convert(list));
+		} catch (JSONSimpleException e) {
+			fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void mainListConversionFull() {
+		List<Object> list = new ArrayList<Object>(1);
+		list.add("a");
+		try {
+			assertEquals("single String list", "[\"a\"]",
+					Converter.convert(list));
+		} catch (JSONSimpleException e) {
+			fail(e.getMessage());
+		}
+	}
+
 }
