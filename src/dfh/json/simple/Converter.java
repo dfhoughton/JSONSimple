@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import dfh.grammar.Grammar;
 import dfh.grammar.Match;
@@ -381,33 +382,65 @@ public class Converter {
 
 	private static void convert(Map<String, Object> map, StringBuilder b,
 			int indent, int margin) throws JSONSimpleException {
-		boolean selfNontrivial = nontrivial(map, indent);
-		if (margin > 0 && selfNontrivial)
-			newline(b, indent, margin);
-		b.append('{');
-		boolean nonInitial = false;
-		for (Entry<String, Object> e : map.entrySet()) {
-			if (nonInitial)
-				b.append(',');
-			else
-				nonInitial = true;
+		if (indent < 0) {
+			b.append('{');
+			boolean nonInitial = false;
+			for (Entry<String, Object> e : map.entrySet()) {
+				if (nonInitial)
+					b.append(',');
+				else
+					nonInitial = true;
+				convert(e.getKey(), b);
+				b.append(':');
+				convert(e.getValue(), b, indent, margin + 2);
+			}
+			b.append('}');
+		} else {
+			boolean selfNontrivial = nontrivial(map, indent);
+			if (map.size() > 1)
+				map = new TreeMap<String, Object>(map);
+			if (margin > 0 && selfNontrivial)
+				newline(b, indent, margin);
+			b.append('{');
+			if (!selfNontrivial)
+				b.append(' ');
+			int max = 0;
+			String format = null;
+			if (selfNontrivial) {
+				for (String s : map.keySet()) {
+					if (nontrivial(s, indent))
+						continue;
+					max = Math.max(max, s.length() + 2);
+				}
+				if (max > 0)
+					format = "%-" + max + "s : ";
+			}
+			boolean nonInitial = false;
+			for (Entry<String, Object> e : map.entrySet()) {
+				String k = e.getKey();
+				Object o = e.getValue();
+				if (nonInitial)
+					b.append(',');
+				else
+					nonInitial = true;
+				if (selfNontrivial)
+					newline(b, indent, margin + 1);
+				if (selfNontrivial && !nontrivial(k, indent)) {
+					StringBuilder b2 = new StringBuilder();
+					convert(k, b2);
+					b.append(String.format(format, b2));
+				} else {
+					convert(k, b);
+					b.append(" : ");
+				}
+				convert(o, b, indent, margin + 2);
+			}
 			if (selfNontrivial)
-				newline(b, indent, margin + 1);
-			else if (indent > -1)
+				newline(b, indent, margin);
+			else if (!map.isEmpty())
 				b.append(' ');
-			convert(e.getKey(), b);
-			if (indent > -1)
-				b.append(' ');
-			b.append(':');
-			if (indent > -1)
-				b.append(' ');
-			convert(e.getValue(), b, indent, margin + 2);
+			b.append('}');
 		}
-		if (selfNontrivial)
-			newline(b, indent, margin);
-		else if (indent > -1)
-			b.append(' ');
-		b.append('}');
 	}
 
 	private static void convert(String key, StringBuilder b) {

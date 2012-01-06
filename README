@@ -22,7 +22,38 @@ out. In the case of Number, the subtype returned will be Double.
 
 4. If you have a JSON string stripped of unnecessary whitespace and you want to make 
 it human-readable, you can use the String Converter.pretty(String) method to add in
-missing whitespace and indentation.
+missing whitespace and indentation. For example, it will convert the following rough
+JSON
+
+  {"b"  : true, "a":1,  "grue":{"baz":1}, "c":null
+  ,"d"  :	[],"eleemosynary" :1.5, 	"flynn": {"foo":"bar","quux"
+  :
+  [1,2,[3]]}}
+
+into
+
+  {"b":true,"a":1,"grue":{"baz":1},"c":null,"d":[],"eleemosynary":1.5,"flynn":{"foo":"bar","quux":[1,2,[3]]}}
 
 5. If you have a puffy JSON string that you want to compress, removing all unnecessary
-whitespace, you can pass it through String Converter.compress(String).
+whitespace, you can pass it through String Converter.compress(String). For example, it
+will convert the rough JSON above into
+
+  {
+     "a"     : 1,
+     "b"     : true,
+     "c"     : null,
+     "d"     : [ ],
+     "eleemosynary" : 1.5,
+     "flynn" : 
+        {
+           "foo"  : "bar",
+           "quux" : 
+              [
+                 1,
+                 2,
+                 [ 3 ]
+              ]
+        },
+     "grue"  : { "baz" : 1 }
+  }
+  
