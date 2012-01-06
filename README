@@ -19,3 +19,10 @@ JSON string.
 3. The Objects must be of types Map<String, Object>, List<Object>, Object[], Integer,
 Number, String, Boolean, or null. These are the types that may go in and will come
 out. In the case of Number, the subtype returned will be Double.
+
+4. If you have a JSON string stripped of unnecessary whitespace and you want to make 
+it human-readable, you can use the String Converter.pretty(String) method to add in
+missing whitespace and indentation.
+
+5. If you have a puffy JSON string that you want to compress, removing all unnecessary
+whitespace, you can pass it through String Converter.compress(String).
