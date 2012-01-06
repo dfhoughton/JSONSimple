@@ -1,4 +1,6 @@
 0.24
+  * improved pretty printing, adding alphabetization and value alignment
+    in maps; also made ordinary output more efficient
 
 0.23, 5 January 2012
   * added pretty printing
