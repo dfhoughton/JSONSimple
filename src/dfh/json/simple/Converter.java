@@ -381,16 +381,20 @@ public class Converter {
 
 	private static void convert(Map<String, Object> map, StringBuilder b,
 			int indent, int margin) throws JSONSimpleException {
-		if (margin > 0)
+		boolean selfNontrivial = nontrivial(map, indent);
+		if (margin > 0 && selfNontrivial)
 			newline(b, indent, margin);
 		b.append('{');
 		boolean nonInitial = false;
 		for (Entry<String, Object> e : map.entrySet()) {
-			newline(b, indent, margin + 1);
 			if (nonInitial)
 				b.append(',');
 			else
 				nonInitial = true;
+			if (selfNontrivial)
+				newline(b, indent, margin + 1);
+			else if (indent > -1)
+				b.append(' ');
 			convert(e.getKey(), b);
 			if (indent > -1)
 				b.append(' ');
@@ -399,7 +403,10 @@ public class Converter {
 				b.append(' ');
 			convert(e.getValue(), b, indent, margin + 2);
 		}
-		newline(b, indent, margin);
+		if (selfNontrivial)
+			newline(b, indent, margin);
+		else if (indent > -1)
+			b.append(' ');
 		b.append('}');
 	}
 
@@ -471,38 +478,89 @@ public class Converter {
 
 	private static void convert(Object[] array, StringBuilder b, int indent,
 			int margin) throws JSONSimpleException {
-		if (margin > 0)
+		boolean selfNontrivial = nontrivial(array, indent);
+		if (margin > 0 && selfNontrivial)
 			newline(b, indent, margin);
 		b.append('[');
 		boolean nonInitial = false;
 		for (Object o : array) {
-			newline(b, indent, margin + 1);
 			if (nonInitial)
 				b.append(',');
 			else
 				nonInitial = true;
+			if (nontrivial(o, indent))
+				newline(b, indent, margin + 1);
 			convert(o, b, indent, margin + 1);
 		}
-		newline(b, indent, margin);
+		if (indent > 0 && selfNontrivial)
+			newline(b, indent, margin);
+		else if (indent > -1)
+			b.append(' ');
 		b.append(']');
 	}
 
 	private static void convert(List<Object> list, StringBuilder b, int indent,
 			int margin) throws JSONSimpleException {
-		if (margin > 0)
+		boolean selfNontrivial = nontrivial(list, indent);
+		if (margin > 0 && selfNontrivial)
 			newline(b, indent, margin);
 		b.append('[');
 		boolean nonInitial = false;
 		for (Object o : list) {
-			newline(b, indent, margin + 1);
 			if (nonInitial)
 				b.append(',');
 			else
 				nonInitial = true;
+			if (selfNontrivial)
+				newline(b, indent, margin + 1);
+			else if (indent > -1)
+				b.append(' ');
 			convert(o, b, indent, margin + 1);
 		}
-		newline(b, indent, margin);
+		if (selfNontrivial)
+			newline(b, indent, margin);
+		else if (indent > -1)
+			b.append(' ');
 		b.append(']');
+	}
+
+	/**
+	 * @param o
+	 * @param indent
+	 * @return whether indentation needed
+	 */
+	@SuppressWarnings("unchecked")
+	private static boolean nontrivial(Object o, int indent) {
+		if (indent < 0)
+			return false;
+		if (o instanceof String)
+			return o.toString().length() > 10;
+		if (o instanceof Map<?, ?>) {
+			Map<String, Object> m = (Map<String, Object>) o;
+			if (m.isEmpty())
+				return false;
+			if (m.size() == 1) {
+				Entry<String, Object> e = m.entrySet().iterator().next();
+				return nontrivial(e.getKey(), indent)
+						&& nontrivial(e.getValue(), indent);
+			}
+			return true;
+		} else if (o instanceof List<?>) {
+			List<Object> l = (List<Object>) o;
+			if (l.isEmpty())
+				return false;
+			if (l.size() == 1)
+				return nontrivial(l.get(0), indent);
+			return true;
+		} else if (o instanceof Object[]) {
+			Object[] ar = (Object[]) o;
+			if (ar.length == 0)
+				return true;
+			if (ar.length == 1)
+				return nontrivial(ar[0], indent);
+			return true;
+		}
+		return false;
 	}
 
 	/**
