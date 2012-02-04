@@ -19,6 +19,7 @@ import org.junit.runners.Suite;
 		ParseErrors.class,//
 		CompressTest.class,//
 		PrettyTest.class,//
+		ProblemUnicode.class,//
 })
 public class AllTests {
 }

@@ -36,7 +36,7 @@ public class Converter {
 			"boolean = 'true' | 'false'",//
 			"     sc = <ec> | <ue>",//
 			"     ec = /[rtfbn\\\\\\/\"]/",//
-			"    nsc = /[^\\\\\\p{Cc}\"]/",//
+			"    nsc = /[^ \\\\ \\t \\r \\f \\n \" ]/x",//
 			"   null = 'null'",//
 			" number = <int> | <double>",//
 			"    int = /-?+(?:0|[1-9]\\d*+)/",//
