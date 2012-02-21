@@ -26,12 +26,12 @@ public class ProblemUnicode {
 		while ((i = is.read(buf)) > -1)
 			baos.write(buf, 0, i);
 		s = new String(baos.toByteArray(), "UTF-8").trim();
-		System.out.println(">>" + s + "<<");
 	}
 
 	@Test
 	public void test() {
-		Grammar g = new Grammar("ROOT = /[^ \\\\ \\t \\r \\f \\n \\x08 \" ]++/x");
+		Grammar g = new Grammar(
+				"ROOT = /[^ \\\\ \\t \\r \\f \\n \\x08 \" ]++/x");
 		assertNotNull(g.matches(s).match());
 	}
 
