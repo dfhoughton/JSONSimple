@@ -20,6 +20,7 @@ import org.junit.runners.Suite;
 		CompressTest.class,//
 		PrettyTest.class,//
 		ProblemUnicode.class,//
+		BasicTypeArrays.class,//
 })
 public class AllTests {
 }

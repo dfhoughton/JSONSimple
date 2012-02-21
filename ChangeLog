@@ -1,5 +1,6 @@
 0.25
   * fixed issue with banning too many control characters
+  * added conversion of basic numeric type arrays -- int[], float[], etc.
 
 0.24
   * improved pretty printing, adding alphabetization and value alignment
