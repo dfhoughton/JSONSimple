@@ -9,18 +9,27 @@
 	<property name="test.classes.dir" value="${build.dir}/test-classes" />
 	<property name="jar.dir" value="${build.dir}/jar" />
 	<property name="doc.dir" value="${basedir}/documentation/html/api" />
-	<path id="lib">
-		<fileset dir="${basedir}/lib">
-			<include name="*.jar" />
-		</fileset>
-	</path>
-	<path id="junit.path">
-		<pathelement location="/usr/share/java/junit4.jar" />
+	<property file="build.properties" />
+	<loadfile property="version" srcFile="VERSION">
+		<filterchain>
+			<linecontainsregexp>
+				<regexp pattern="[0-9]" />
+			</linecontainsregexp>
+			<striplinecomments>
+				<comment value="#" />
+			</striplinecomments>
+			<striplinebreaks />
+		</filterchain>
+	</loadfile>
+	<path id="grammar.path">
+		<pathelement location="${grammar.jar}" />
 	</path>
 	<path id="classpath.test">
 		<pathelement location="${classes.dir}" />
+		<pathelement location="${test.dir}" />
 		<pathelement location="${test.classes.dir}" />
-		<path refid="junit.path" />
+		<pathelement location="${junit}" />
+		<path refid="grammar.path" />
 	</path>
 
 	<target name="clean" description="removes anything created by any other ant task">
@@ -31,13 +40,16 @@
 	<target name="compile" description="compile source to bytecode">
 		<mkdir dir="${classes.dir}" />
 		<javac srcdir="${src.dir}" destdir="${classes.dir}" includeantruntime="false">
-			<classpath refid="lib" />
+			<classpath refid="grammar.path" />
 		</javac>
 	</target>
 
-	<target name="jar" depends="compile" description="packages code into jar">
+	<target name="jar" depends="udv" description="packages code into jar">
 		<mkdir dir="${jar.dir}" />
-		<jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}" />
+		<mkdir dir="${classes.dir}/META-INF" />
+		<copy file="lgpl.txt" tofile="${classes.dir}/META-INF/LICENSE" />
+		<copy file="NOTICE" tofile="${classes.dir}/META-INF/NOTICE" />
+		<jar destfile="${jar.dir}/${ant.project.name}-${version}.jar" basedir="${classes.dir}" />
 	</target>
 
 	<target name="javadoc" description="API for public and protected methods">
@@ -50,12 +62,35 @@
 		</javadoc>
 	</target>
 
+	<target name="tar" depends="udv" description="bundle up the source and documentation">
+		<tar destfile="${build.dir}/cli-${version}.tgz" compression="gzip">
+			<tarfileset dir="${basedir}">
+				<include name="README" />
+				<include name="NOTICE" />
+				<include name="VERSION" />
+				<include name="TODO" />
+				<include name="lgpl.txt" />
+				<include name="build.xml" />
+				<include name="build.properties" />
+				<include name="test/**/*.java" />
+				<include name="example/**/*.java" />
+				<include name="src/**/*.java" />
+				<include name="documentation/**/*" />
+			</tarfileset>
+		</tar>
+	</target>
+
+	<target name="udv" depends="compile" description="updates version number used in HTML documentation">
+		<replaceregexp match='version\s+=\s+".*"' replace='version = "${version}"' file="documentation/html/headers.json" />
+	</target>
+
 	<target name="test-compile" depends="compile" description="compiles junit tests">
 		<mkdir dir="${test.classes.dir}" />
 		<javac srcdir="${test.dir}" destdir="${test.classes.dir}" includeantruntime="false">
 			<classpath refid="classpath.test" />
 		</javac>
 	</target>
+
 	<target name="test" depends="test-compile" description="runs junit tests">
 		<junit>
 			<classpath refid="classpath.test" />

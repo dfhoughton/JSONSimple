@@ -1,11 +1,10 @@
 package dfh.json.simple.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.regex.Pattern;
 
 import org.junit.BeforeClass;
 import org.junit.Test;

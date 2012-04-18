@@ -21,6 +21,7 @@ import org.junit.runners.Suite;
 		PrettyTest.class,//
 		ProblemUnicode.class,//
 		BasicTypeArrays.class,//
+		Regressions.class//
 })
 public class AllTests {
 }
