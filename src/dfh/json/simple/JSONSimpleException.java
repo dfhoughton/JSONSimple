@@ -8,7 +8,7 @@ package dfh.json.simple;
  * @author David Houghton
  *
  */
-public class JSONSimpleException extends Exception {
+public class JSONSimpleException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	public JSONSimpleException(String string) {

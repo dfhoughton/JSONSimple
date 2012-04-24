@@ -62,12 +62,11 @@ public class Converter {
 	 * object.
 	 * 
 	 * @param map
-	 *            {@link Map} from strings to objects
+	 *            {@link Map}, keys will be stringified
 	 * @return JSON string
 	 * @throws JSONSimpleException
 	 */
-	public static String convert(Map<String, Object> map)
-			throws JSONSimpleException {
+	public static String convert(Map<?, ?> map) throws JSONSimpleException {
 		return convert(map, -1);
 	}
 
@@ -76,14 +75,14 @@ public class Converter {
 	 * object. Nested values are indented.
 	 * 
 	 * @param map
-	 *            {@link Map} from strings to objects
+	 *            {@link Map}, keys will be stringified
 	 * @param indent
 	 *            amount nested values are to be indented relative to their
 	 *            context; if this is less than 0, there will be no indentation
 	 * @return JSON string
 	 * @throws JSONSimpleException
 	 */
-	public static String convert(Map<String, Object> map, int indent)
+	public static String convert(Map<?, ?> map, int indent)
 			throws JSONSimpleException {
 		StringBuilder b = new StringBuilder();
 		convert(map, b, indent, 0);
@@ -526,17 +525,17 @@ public class Converter {
 		}
 	}
 
-	private static void convert(Map<String, Object> map, StringBuilder b,
-			int indent, int margin) throws JSONSimpleException {
+	private static void convert(Map<?, ?> map, StringBuilder b, int indent,
+			int margin) throws JSONSimpleException {
 		if (indent < 0) {
 			b.append('{');
 			boolean nonInitial = false;
-			for (Entry<String, Object> e : map.entrySet()) {
+			for (Entry<?, ?> e : map.entrySet()) {
 				if (nonInitial)
 					b.append(',');
 				else
 					nonInitial = true;
-				convert(e.getKey(), b);
+				convert(e.getKey().toString(), b);
 				b.append(':');
 				convert(e.getValue(), b, indent, margin + 2);
 			}
@@ -544,7 +543,7 @@ public class Converter {
 		} else {
 			boolean selfNontrivial = nontrivial(map, indent);
 			if (map.size() > 1)
-				map = new TreeMap<String, Object>(map);
+				map = new TreeMap<Object, Object>(map);
 			if (margin > 0 && selfNontrivial)
 				newline(b, indent, margin);
 			b.append('{');
@@ -553,7 +552,8 @@ public class Converter {
 			int max = 0;
 			String format = null;
 			if (selfNontrivial) {
-				for (String s : map.keySet()) {
+				for (Object o : map.keySet()) {
+					String s = o.toString();
 					if (nontrivial(s, indent))
 						continue;
 					max = Math.max(max, s.length() + 2);
@@ -562,8 +562,8 @@ public class Converter {
 					format = "%-" + max + "s : ";
 			}
 			boolean nonInitial = false;
-			for (Entry<String, Object> e : map.entrySet()) {
-				String k = e.getKey();
+			for (Entry<?, ?> e : map.entrySet()) {
+				String k = e.getKey().toString();
 				Object o = e.getValue();
 				if (nonInitial)
 					b.append(',');
@@ -726,7 +726,7 @@ public class Converter {
 		b.append(']');
 	}
 
-	private static void convert(List<Object> list, StringBuilder b, int indent,
+	private static void convert(List<?> list, StringBuilder b, int indent,
 			int margin) throws JSONSimpleException {
 		boolean selfNontrivial = nontrivial(list, indent);
 		if (margin > 0 && selfNontrivial)
@@ -768,7 +768,7 @@ public class Converter {
 				return false;
 			if (m.size() == 1) {
 				Entry<String, Object> e = m.entrySet().iterator().next();
-				return nontrivial(e.getKey(), indent)
+				return nontrivial(e.getKey().toString(), indent)
 						&& nontrivial(e.getValue(), indent);
 			}
 			return true;
