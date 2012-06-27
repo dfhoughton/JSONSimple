@@ -1,3 +1,14 @@
+0.25, 27 June 2012
+  * fixed issue with banning too many control characters
+  * added conversion of basic numeric type arrays -- int[], float[], etc.
+  * allow any object as keys, though in JSON objects this will be represented
+    by their stringification
+  * made JSONSimpleException a RuntimeException
+
+0.24
+  * improved pretty printing, adding alphabetization and value alignment
+    in maps; also made ordinary output more efficient
+
 0.23, 5 January 2012
   * added pretty printing
   * added capability to convert Object[] as well as List<Object>

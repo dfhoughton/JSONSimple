@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import dfh.grammar.Grammar;
 import dfh.grammar.Match;
@@ -35,7 +36,7 @@ public class Converter {
 			"boolean = 'true' | 'false'",//
 			"     sc = <ec> | <ue>",//
 			"     ec = /[rtfbn\\\\\\/\"]/",//
-			"    nsc = /[^\\\\\\p{Cc}\"]/",//
+			"    nsc = /[^ \\\\ \\t \\r \\f \\n \" ]/x",//
 			"   null = 'null'",//
 			" number = <int> | <double>",//
 			"    int = /-?+(?:0|[1-9]\\d*+)/",//
@@ -61,12 +62,11 @@ public class Converter {
 	 * object.
 	 * 
 	 * @param map
-	 *            {@link Map} from strings to objects
+	 *            {@link Map}, keys will be stringified
 	 * @return JSON string
 	 * @throws JSONSimpleException
 	 */
-	public static String convert(Map<String, Object> map)
-			throws JSONSimpleException {
+	public static String convert(Map<?, ?> map) throws JSONSimpleException {
 		return convert(map, -1);
 	}
 
@@ -75,14 +75,14 @@ public class Converter {
 	 * object. Nested values are indented.
 	 * 
 	 * @param map
-	 *            {@link Map} from strings to objects
+	 *            {@link Map}, keys will be stringified
 	 * @param indent
 	 *            amount nested values are to be indented relative to their
 	 *            context; if this is less than 0, there will be no indentation
 	 * @return JSON string
 	 * @throws JSONSimpleException
 	 */
-	public static String convert(Map<String, Object> map, int indent)
+	public static String convert(Map<?, ?> map, int indent)
 			throws JSONSimpleException {
 		StringBuilder b = new StringBuilder();
 		convert(map, b, indent, 0);
@@ -113,6 +113,152 @@ public class Converter {
 	 */
 	public static String convert(Object[] list) throws JSONSimpleException {
 		return convert(list, -1);
+	}
+
+	/**
+	 * Converts an int[] object into a JSON string.
+	 * 
+	 * @param list
+	 *            an array of ints
+	 * @return JSON string
+	 * @throws JSONSimpleException
+	 */
+	public static String convert(int[] list) throws JSONSimpleException {
+		return convert(objectify(list), -1);
+	}
+
+	/**
+	 * Convert <code>int[]</code> to JSON string representing a list, indenting
+	 * nested values.
+	 * 
+	 * @param list
+	 *            array of integers
+	 * @param indent
+	 *            amount to indent nested values; if this is less than 0, there
+	 *            will be no indentation
+	 * @return JSON string
+	 * @throws JSONSimpleException
+	 */
+	public static String convert(int[] list, int indent)
+			throws JSONSimpleException {
+		return convert(objectify(list), indent);
+	}
+
+	/**
+	 * Converts a <code>long[]</code> object into a JSON string.
+	 * 
+	 * @param list
+	 *            an array of longs
+	 * @return JSON string
+	 * @throws JSONSimpleException
+	 */
+	public static String convert(long[] list) throws JSONSimpleException {
+		return convert(objectify(list), -1);
+	}
+
+	/**
+	 * Convert <code>long[]</code> to JSON string representing a list, indenting
+	 * nested values.
+	 * 
+	 * @param list
+	 *            array of longs
+	 * @param indent
+	 *            amount to indent nested values; if this is less than 0, there
+	 *            will be no indentation
+	 * @return JSON string
+	 * @throws JSONSimpleException
+	 */
+	public static String convert(long[] list, int indent)
+			throws JSONSimpleException {
+		return convert(objectify(list), indent);
+	}
+
+	/**
+	 * Converts a <code>double[]</code> object into a JSON string.
+	 * 
+	 * @param list
+	 *            an array of doubles
+	 * @return JSON string
+	 * @throws JSONSimpleException
+	 */
+	public static String convert(double[] list) throws JSONSimpleException {
+		return convert(objectify(list), -1);
+	}
+
+	/**
+	 * Convert <code>double[]</code> to JSON string representing a list,
+	 * indenting nested values.
+	 * 
+	 * @param list
+	 *            array of doubles
+	 * @param indent
+	 *            amount to indent nested values; if this is less than 0, there
+	 *            will be no indentation
+	 * @return JSON string
+	 * @throws JSONSimpleException
+	 */
+	public static String convert(double[] list, int indent)
+			throws JSONSimpleException {
+		return convert(objectify(list), indent);
+	}
+
+	/**
+	 * Converts a <code>float[]</code> object into a JSON string.
+	 * 
+	 * @param list
+	 *            an array of floats
+	 * @return JSON string
+	 * @throws JSONSimpleException
+	 */
+	public static String convert(float[] list) throws JSONSimpleException {
+		return convert(objectify(list), -1);
+	}
+
+	/**
+	 * Convert <code>float[]</code> to JSON string representing a list,
+	 * indenting nested values.
+	 * 
+	 * @param list
+	 *            array of floats
+	 * @param indent
+	 *            amount to indent nested values; if this is less than 0, there
+	 *            will be no indentation
+	 * @return JSON string
+	 * @throws JSONSimpleException
+	 */
+	public static String convert(float[] list, int indent)
+			throws JSONSimpleException {
+		return convert(objectify(list), indent);
+	}
+
+	/**
+	 * Converts a <code>byte[]</code> object, treated as an array of numeric
+	 * bytes, into a JSON string.
+	 * 
+	 * @param list
+	 *            array of bytes
+	 * @return JSON string
+	 * @throws JSONSimpleException
+	 */
+	public static String convert(byte[] list) throws JSONSimpleException {
+		return convert(objectify(list), -1);
+	}
+
+	/**
+	 * Convert <code>byte[]</code> to JSON string representing a list of
+	 * numbers, indenting nested values.
+	 * 
+	 * @param list
+	 *            array of bytes
+	 * @param indent
+	 *            amount to indent nested values; if this is less than 0, there
+	 *            will be no indentation
+	 * @return JSON string
+	 * @throws JSONSimpleException
+	 */
+	public static String convert(byte[] list, int indent)
+			throws JSONSimpleException {
+		return convert(objectify(list), indent);
 	}
 
 	/**
@@ -379,35 +525,68 @@ public class Converter {
 		}
 	}
 
-	private static void convert(Map<String, Object> map, StringBuilder b,
-			int indent, int margin) throws JSONSimpleException {
-		boolean selfNontrivial = nontrivial(map, indent);
-		if (margin > 0 && selfNontrivial)
-			newline(b, indent, margin);
-		b.append('{');
-		boolean nonInitial = false;
-		for (Entry<String, Object> e : map.entrySet()) {
-			if (nonInitial)
-				b.append(',');
-			else
-				nonInitial = true;
+	private static void convert(Map<?, ?> map, StringBuilder b, int indent,
+			int margin) throws JSONSimpleException {
+		if (indent < 0) {
+			b.append('{');
+			boolean nonInitial = false;
+			for (Entry<?, ?> e : map.entrySet()) {
+				if (nonInitial)
+					b.append(',');
+				else
+					nonInitial = true;
+				convert(e.getKey().toString(), b);
+				b.append(':');
+				convert(e.getValue(), b, indent, margin + 2);
+			}
+			b.append('}');
+		} else {
+			boolean selfNontrivial = nontrivial(map, indent);
+			if (map.size() > 1)
+				map = new TreeMap<Object, Object>(map);
+			if (margin > 0 && selfNontrivial)
+				newline(b, indent, margin);
+			b.append('{');
+			if (!selfNontrivial)
+				b.append(' ');
+			int max = 0;
+			String format = null;
+			if (selfNontrivial) {
+				for (Object o : map.keySet()) {
+					String s = o.toString();
+					if (nontrivial(s, indent))
+						continue;
+					max = Math.max(max, s.length() + 2);
+				}
+				if (max > 0)
+					format = "%-" + max + "s : ";
+			}
+			boolean nonInitial = false;
+			for (Entry<?, ?> e : map.entrySet()) {
+				String k = e.getKey().toString();
+				Object o = e.getValue();
+				if (nonInitial)
+					b.append(',');
+				else
+					nonInitial = true;
+				if (selfNontrivial)
+					newline(b, indent, margin + 1);
+				if (selfNontrivial && !nontrivial(k, indent)) {
+					StringBuilder b2 = new StringBuilder();
+					convert(k, b2);
+					b.append(String.format(format, b2));
+				} else {
+					convert(k, b);
+					b.append(" : ");
+				}
+				convert(o, b, indent, margin + 2);
+			}
 			if (selfNontrivial)
-				newline(b, indent, margin + 1);
-			else if (indent > -1)
+				newline(b, indent, margin);
+			else if (!map.isEmpty())
 				b.append(' ');
-			convert(e.getKey(), b);
-			if (indent > -1)
-				b.append(' ');
-			b.append(':');
-			if (indent > -1)
-				b.append(' ');
-			convert(e.getValue(), b, indent, margin + 2);
+			b.append('}');
 		}
-		if (selfNontrivial)
-			newline(b, indent, margin);
-		else if (indent > -1)
-			b.append(' ');
-		b.append('}');
 	}
 
 	private static void convert(String key, StringBuilder b) {
@@ -468,8 +647,56 @@ public class Converter {
 		else if (value instanceof Boolean)
 			b.append(value.toString());
 		else
-			throw new JSONSimpleException(
-					"values must be strings, arrays, lists, maps, null, booleans, or numbers");
+			convert(objectify(value), b, indent, margin);
+	}
+
+	/**
+	 * Attempts to convert an array of some basic numeric type into an array of
+	 * equivalent numeric objects.
+	 * 
+	 * @param value
+	 * @return a basic type array converted into an object array
+	 * @throws JSONSimpleException
+	 *             when such a conversion is impossible
+	 */
+	private static Object[] objectify(Object value) throws JSONSimpleException {
+		if (value instanceof double[]) {
+			double[] ar1 = (double[]) value;
+			Double[] ar2 = new Double[ar1.length];
+			for (int i = 0; i < ar1.length; i++)
+				ar2[i] = ar1[i];
+			return ar2;
+		}
+		if (value instanceof float[]) {
+			float[] ar1 = (float[]) value;
+			Float[] ar2 = new Float[ar1.length];
+			for (int i = 0; i < ar1.length; i++)
+				ar2[i] = ar1[i];
+			return ar2;
+		}
+		if (value instanceof int[]) {
+			int[] ar1 = (int[]) value;
+			Integer[] ar2 = new Integer[ar1.length];
+			for (int i = 0; i < ar1.length; i++)
+				ar2[i] = ar1[i];
+			return ar2;
+		}
+		if (value instanceof long[]) {
+			long[] ar1 = (long[]) value;
+			Long[] ar2 = new Long[ar1.length];
+			for (int i = 0; i < ar1.length; i++)
+				ar2[i] = ar1[i];
+			return ar2;
+		}
+		if (value instanceof byte[]) {
+			byte[] ar1 = (byte[]) value;
+			Byte[] ar2 = new Byte[ar1.length];
+			for (int i = 0; i < ar1.length; i++)
+				ar2[i] = ar1[i];
+			return ar2;
+		}
+		throw new JSONSimpleException(
+				"values must be strings, arrays, lists, maps, null, booleans, or numbers");
 	}
 
 	private static void convert(Number n, StringBuilder b) {
@@ -499,7 +726,7 @@ public class Converter {
 		b.append(']');
 	}
 
-	private static void convert(List<Object> list, StringBuilder b, int indent,
+	private static void convert(List<?> list, StringBuilder b, int indent,
 			int margin) throws JSONSimpleException {
 		boolean selfNontrivial = nontrivial(list, indent);
 		if (margin > 0 && selfNontrivial)
@@ -541,7 +768,7 @@ public class Converter {
 				return false;
 			if (m.size() == 1) {
 				Entry<String, Object> e = m.entrySet().iterator().next();
-				return nontrivial(e.getKey(), indent)
+				return nontrivial(e.getKey().toString(), indent)
 						&& nontrivial(e.getValue(), indent);
 			}
 			return true;
