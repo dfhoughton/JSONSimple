@@ -1,7 +1,7 @@
 package dfh.json.simple;
 
 /**
- * Tags exceptions thrown from JSONSimple library.
+ * Tags exceptions thrown from JSONSimple library. 
  * <p>
  * <b>Creation date:</b> Oct 5, 2011
  *
