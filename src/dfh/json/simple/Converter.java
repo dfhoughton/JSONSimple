@@ -299,6 +299,7 @@ public class Converter {
 		return b.toString();
 	}
 
+	@SuppressWarnings("serial")
 	private static final MatchTest normTest = new MatchTest() {
 		@Override
 		public boolean test(Match m) {
@@ -379,6 +380,110 @@ public class Converter {
 
 	/**
 	 * Normalizes whitespace in JSON string, indenting the contents of lists and
+	 * maps appropriately. The indentation size is given by
+	 * {@link #DEFAULT_INDENTATION}.
+	 * 
+	 * @param json
+	 * @return json with unnecessary whitespace removed
+	 * @throws JSONSimpleException
+	 */
+	public static String pretty(Map<?, ?> json) {
+		return convert(json, DEFAULT_INDENTATION);
+	}
+
+	/**
+	 * Normalizes whitespace in JSON string, indenting the contents of lists and
+	 * maps appropriately. The indentation size is given by
+	 * {@link #DEFAULT_INDENTATION}.
+	 * 
+	 * @param json
+	 * @return json with unnecessary whitespace removed
+	 * @throws JSONSimpleException
+	 */
+	public static String pretty(Collection<?> json) {
+		return convert(json, DEFAULT_INDENTATION);
+	}
+
+	/**
+	 * Normalizes whitespace in JSON string, indenting the contents of lists and
+	 * maps appropriately. The indentation size is given by
+	 * {@link #DEFAULT_INDENTATION}.
+	 * 
+	 * @param json
+	 * @return json with unnecessary whitespace removed
+	 * @throws JSONSimpleException
+	 */
+	public static String pretty(byte[] json) {
+		return convert(json, DEFAULT_INDENTATION);
+	}
+
+	/**
+	 * Normalizes whitespace in JSON string, indenting the contents of lists and
+	 * maps appropriately. The indentation size is given by
+	 * {@link #DEFAULT_INDENTATION}.
+	 * 
+	 * @param json
+	 * @return json with unnecessary whitespace removed
+	 * @throws JSONSimpleException
+	 */
+	public static String pretty(double[] json) {
+		return convert(json, DEFAULT_INDENTATION);
+	}
+
+	/**
+	 * Normalizes whitespace in JSON string, indenting the contents of lists and
+	 * maps appropriately. The indentation size is given by
+	 * {@link #DEFAULT_INDENTATION}.
+	 * 
+	 * @param json
+	 * @return json with unnecessary whitespace removed
+	 * @throws JSONSimpleException
+	 */
+	public static String pretty(float[] json) {
+		return convert(json, DEFAULT_INDENTATION);
+	}
+
+	/**
+	 * Normalizes whitespace in JSON string, indenting the contents of lists and
+	 * maps appropriately. The indentation size is given by
+	 * {@link #DEFAULT_INDENTATION}.
+	 * 
+	 * @param json
+	 * @return json with unnecessary whitespace removed
+	 * @throws JSONSimpleException
+	 */
+	public static String pretty(int[] json) {
+		return convert(json, DEFAULT_INDENTATION);
+	}
+
+	/**
+	 * Normalizes whitespace in JSON string, indenting the contents of lists and
+	 * maps appropriately. The indentation size is given by
+	 * {@link #DEFAULT_INDENTATION}.
+	 * 
+	 * @param json
+	 * @return json with unnecessary whitespace removed
+	 * @throws JSONSimpleException
+	 */
+	public static String pretty(Object[] json) {
+		return convert(json, DEFAULT_INDENTATION);
+	}
+
+	/**
+	 * Normalizes whitespace in JSON string, indenting the contents of lists and
+	 * maps appropriately. The indentation size is given by
+	 * {@link #DEFAULT_INDENTATION}.
+	 * 
+	 * @param json
+	 * @return json with unnecessary whitespace removed
+	 * @throws JSONSimpleException
+	 */
+	public static String pretty(long[] json) {
+		return convert(json, DEFAULT_INDENTATION);
+	}
+
+	/**
+	 * Normalizes whitespace in JSON string, indenting the contents of lists and
 	 * maps appropriately.
 	 * 
 	 * @param json
@@ -397,6 +502,7 @@ public class Converter {
 		return convert((List<Object>) obj, indent);
 	}
 
+	@SuppressWarnings("serial")
 	private static final MatchTest stringOrValue = new MatchTest() {
 		@Override
 		public boolean test(Match m) {
@@ -434,6 +540,7 @@ public class Converter {
 			return null;
 	}
 
+	@SuppressWarnings("serial")
 	private static final MatchTest valueTest = new MatchTest() {
 		@Override
 		public boolean test(Match o) {
@@ -461,6 +568,7 @@ public class Converter {
 			return new Double(child.group());
 	}
 
+	@SuppressWarnings("serial")
 	private static final MatchTest scOrNsc = new MatchTest() {
 		@Override
 		public boolean test(Match o) {
