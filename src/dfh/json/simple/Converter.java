@@ -118,7 +118,7 @@ public class Converter {
 	}
 
 	/**
-	 * Converts an int[] object into a JSON string.
+	 * Converts an {@code int[]} object into a JSON string.
 	 * 
 	 * @param list
 	 *            an array of ints
@@ -130,7 +130,7 @@ public class Converter {
 	}
 
 	/**
-	 * Convert <code>int[]</code> to JSON string representing a list, indenting
+	 * Convert {@code int[]} to JSON string representing a list, indenting
 	 * nested values.
 	 * 
 	 * @param list
@@ -147,7 +147,95 @@ public class Converter {
 	}
 
 	/**
-	 * Converts a <code>long[]</code> object into a JSON string.
+	 * Converts an {@code short[]} object into a JSON string.
+	 * 
+	 * @param list
+	 *            an array of ints
+	 * @return JSON string
+	 * @throws JSONSimpleException
+	 */
+	public static String convert(short[] list) throws JSONSimpleException {
+		return convert(objectify(list), -1);
+	}
+
+	/**
+	 * Convert {@code short[]} to JSON string representing a list, indenting
+	 * nested values.
+	 * 
+	 * @param list
+	 *            array of integers
+	 * @param indent
+	 *            amount to indent nested values; if this is less than 0, there
+	 *            will be no indentation
+	 * @return JSON string
+	 * @throws JSONSimpleException
+	 */
+	public static String convert(short[] list, int indent)
+			throws JSONSimpleException {
+		return convert(objectify(list), indent);
+	}
+
+	/**
+	 * Converts an {@code boolean[]} object into a JSON string.
+	 * 
+	 * @param list
+	 *            an array of ints
+	 * @return JSON string
+	 * @throws JSONSimpleException
+	 */
+	public static String convert(boolean[] list) throws JSONSimpleException {
+		return convert(objectify(list), -1);
+	}
+
+	/**
+	 * Convert {@code boolean[]} to JSON string representing a list of booleans,
+	 * indenting nested values.
+	 * 
+	 * @param list
+	 *            array of integers
+	 * @param indent
+	 *            amount to indent nested values; if this is less than 0, there
+	 *            will be no indentation
+	 * @return JSON string
+	 * @throws JSONSimpleException
+	 */
+	public static String convert(boolean[] list, int indent)
+			throws JSONSimpleException {
+		return convert(objectify(list), indent);
+	}
+
+	/**
+	 * Converts an {@code char[]} object into a JSON string representing an
+	 * array of strings.
+	 * 
+	 * @param list
+	 *            an array of ints
+	 * @return JSON string
+	 * @throws JSONSimpleException
+	 */
+	public static String convert(char[] list) throws JSONSimpleException {
+		return convert(objectify(list), -1);
+	}
+
+	/**
+	 * Convert {@code char[]} to JSON string representing an array of strings,
+	 * indenting nested values.
+	 * 
+	 * @param list
+	 *            array of integers
+	 * @param indent
+	 *            amount to indent nested values; if this is less than 0, there
+	 *            will be no indentation
+	 * @return JSON string
+	 * @throws JSONSimpleException
+	 */
+	public static String convert(char[] list, int indent)
+			throws JSONSimpleException {
+		return convert(objectify(list), indent);
+	}
+
+	/**
+	 * Converts a {@code long[]} object into a JSON string.
 	 * 
 	 * @param list
 	 *            an array of longs
@@ -159,7 +247,7 @@ public class Converter {
 	}
 
 	/**
-	 * Convert <code>long[]</code> to JSON string representing a list, indenting
+	 * Convert {@code long[]} to JSON string representing a list, indenting
 	 * nested values.
 	 * 
 	 * @param list
@@ -176,7 +264,7 @@ public class Converter {
 	}
 
 	/**
-	 * Converts a <code>double[]</code> object into a JSON string.
+	 * Converts a {@code double[]} object into a JSON string.
 	 * 
 	 * @param list
 	 *            an array of doubles
@@ -188,8 +276,8 @@ public class Converter {
 	}
 
 	/**
-	 * Convert <code>double[]</code> to JSON string representing a list,
-	 * indenting nested values.
+	 * Convert {@code double[]} to JSON string representing a list, indenting
+	 * nested values.
 	 * 
 	 * @param list
 	 *            array of doubles
@@ -205,7 +293,7 @@ public class Converter {
 	}
 
 	/**
-	 * Converts a <code>float[]</code> object into a JSON string.
+	 * Converts a {@code float[]} object into a JSON string.
 	 * 
 	 * @param list
 	 *            an array of floats
@@ -217,8 +305,8 @@ public class Converter {
 	}
 
 	/**
-	 * Convert <code>float[]</code> to JSON string representing a list,
-	 * indenting nested values.
+	 * Convert {@code float[]} to JSON string representing a list, indenting
+	 * nested values.
 	 * 
 	 * @param list
 	 *            array of floats
@@ -234,8 +322,8 @@ public class Converter {
 	}
 
 	/**
-	 * Converts a <code>byte[]</code> object, treated as an array of numeric
-	 * bytes, into a JSON string.
+	 * Converts a {@code byte[]} object, treated as an array of numeric bytes,
+	 * into a JSON string.
 	 * 
 	 * @param list
 	 *            array of bytes
@@ -247,8 +335,8 @@ public class Converter {
 	}
 
 	/**
-	 * Convert <code>byte[]</code> to JSON string representing a list of
-	 * numbers, indenting nested values.
+	 * Convert {@code byte[]} to JSON string representing a list of numbers,
+	 * indenting nested values.
 	 * 
 	 * @param list
 	 *            array of bytes
@@ -817,6 +905,13 @@ public class Converter {
 			String[] ar2 = new String[ar1.length];
 			for (int i = 0; i < ar1.length; i++)
 				ar2[i] = Character.toString(ar1[i]);
+			return ar2;
+		}
+		if (value instanceof boolean[]) {
+			boolean[] ar1 = (boolean[]) value;
+			Boolean[] ar2 = new Boolean[ar1.length];
+			for (int i = 0; i < ar1.length; i++)
+				ar2[i] = ar1[i];
 			return ar2;
 		}
 		throw new JSONSimpleException(
