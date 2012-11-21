@@ -3,3 +3,4 @@
 * use Grammar to convert JSON strings back into POJOs
 . convert everywhere to cached MatchTest objects
 . make alphabetization of pretty output optional
+. use BigInteger and BigDecimal as number formats
