@@ -1,6 +1,8 @@
 0.27
   * made numeric classes BigInteger and BigDecimal to eliminate size
     constraints
+  * added convertion of short[] and char[], treating the latter as an array of
+    strings
 
 0.26, 24 July 2012
   * added a bunch of pretty methods to simplify beautifying convertible

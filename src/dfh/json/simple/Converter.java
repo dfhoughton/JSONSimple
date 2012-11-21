@@ -761,8 +761,8 @@ public class Converter {
 	}
 
 	/**
-	 * Attempts to convert an array of some basic numeric type into an array of
-	 * equivalent numeric objects.
+	 * Attempts to convert an array of some basic type into an array of
+	 * equivalent objects.
 	 * 
 	 * @param value
 	 * @return a basic type array converted into an object array
@@ -798,11 +798,25 @@ public class Converter {
 				ar2[i] = ar1[i];
 			return ar2;
 		}
+		if (value instanceof short[]) {
+			short[] ar1 = (short[]) value;
+			Short[] ar2 = new Short[ar1.length];
+			for (int i = 0; i < ar1.length; i++)
+				ar2[i] = ar1[i];
+			return ar2;
+		}
 		if (value instanceof byte[]) {
 			byte[] ar1 = (byte[]) value;
 			Byte[] ar2 = new Byte[ar1.length];
 			for (int i = 0; i < ar1.length; i++)
 				ar2[i] = ar1[i];
+			return ar2;
+		}
+		if (value instanceof char[]) {
+			char[] ar1 = (char[]) value;
+			String[] ar2 = new String[ar1.length];
+			for (int i = 0; i < ar1.length; i++)
+				ar2[i] = Character.toString(ar1[i]);
 			return ar2;
 		}
 		throw new JSONSimpleException(
