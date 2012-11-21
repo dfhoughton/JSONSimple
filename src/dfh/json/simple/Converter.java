@@ -30,11 +30,11 @@ public class Converter {
 	 */
 	public static final String[] JSON_RULES = {
 			//
-			"   ROOT = <s> [{norm} <obj> | <array> ] <s>",//
-			"    obj = '{' <s> [ <string> <s> ':' <s> <value> [ <s>  ',' <s> <string> <s> ':' <s> <value> <s> ]* <s> ]? '}'",//
-			"  array = '[' <s> [ <value> [ <s> ',' <s> <value> ]* <s> ]? ']'",//
-			"  value = <string> | <obj> | <boolean> | <null> | <array> | <number>",//
-			" string = '\"' [ '\\\\' <sc> | <nsc> ]*+ '\"'",//
+			"   ROOT = <s> [ <obj> | <array> ] <s>",//
+			"    obj = '{' :: <s> [ <string> <s> ':' <s> <value> [ <s>  ',' <s> <string> <s> ':' <s> <value> <s> ]* <s> ]? '}'",//
+			"  array = '[' :: <s> [ <value> [ <s> ',' <s> <value> ]* <s> ]? ']'",//
+			"  value = <string> | <number> | <boolean> | <null> | <array> | <obj>",//
+			" string = '\"' :: [ '\\\\' <sc> | <nsc> ]*+ '\"'",//
 			"boolean = 'true' | 'false'",//
 			"     sc = <ec> | <ue>",//
 			"     ec = /[rtfbn\\\\\\/\"]/",//
@@ -389,14 +389,6 @@ public class Converter {
 		return b.toString();
 	}
 
-	@SuppressWarnings("serial")
-	private static final MatchTest normTest = new MatchTest() {
-		@Override
-		public boolean test(Match m) {
-			return m.hasLabel("norm");
-		}
-	};
-
 	/**
 	 * Converts a JSON string to either a map from strings to objects or a list
 	 * of objects.
@@ -429,11 +421,11 @@ public class Converter {
 			throw new JSONSimpleException(b.toString());
 		}
 
-		n = n.first(normTest);
+		n = n.child(1);
 		for (Match child : n.children()) {
-			if (child.hasLabel("array"))
+			if (child.labelId("array"))
 				return convertArray(child, json);
-			else if (child.hasLabel("obj"))
+			else if (child.labelId("obj"))
 				return convertObject(child, json);
 		}
 		throw new JSONSimpleException(
@@ -596,7 +588,8 @@ public class Converter {
 	private static final MatchTest stringOrValue = new MatchTest() {
 		@Override
 		public boolean test(Match m) {
-			return m.hasLabel("string") || m.hasLabel("value");
+			return m.labelId("string")
+					|| m.labelId("value");
 		}
 	};
 
@@ -604,7 +597,7 @@ public class Converter {
 		Map<String, Object> map = new LinkedHashMap<String, Object>();
 		String key = null;
 		for (Match child : m.closest(stringOrValue)) {
-			if (child.hasLabel("string"))
+			if (child.labelId("string"))
 				key = convertString(child, json);
 			else {
 				Object o = convertValue(child, json);
@@ -616,15 +609,15 @@ public class Converter {
 
 	private static Object convertValue(Match m, String json) {
 		Match child = m.children()[0];
-		if (child.hasLabel("string")) {
+		if (child.labelId("string")) {
 			return convertString(child, json);
-		} else if (child.hasLabel("number")) {
+		} else if (child.labelId("number")) {
 			return convertNumber(child);
-		} else if (child.hasLabel("obj")) {
+		} else if (child.labelId("obj")) {
 			return convertObject(child, json);
-		} else if (child.hasLabel("boolean")) {
+		} else if (child.labelId("boolean")) {
 			return convertBoolean(child);
-		} else if (child.hasLabel("array")) {
+		} else if (child.labelId("array")) {
 			return convertArray(child, json);
 		} else
 			return null;
@@ -634,7 +627,7 @@ public class Converter {
 	private static final MatchTest valueTest = new MatchTest() {
 		@Override
 		public boolean test(Match o) {
-			return o.hasLabel("value");
+			return o.labelId("value");
 		}
 	};
 
@@ -652,7 +645,7 @@ public class Converter {
 
 	private static Object convertNumber(Match child) {
 		child = child.children()[0];
-		if (child.hasLabel("int"))
+		if (child.labelId("int"))
 			return new BigInteger(child.group());
 		else
 			return new BigDecimal(child.group());
@@ -662,14 +655,15 @@ public class Converter {
 	private static final MatchTest scOrNsc = new MatchTest() {
 		@Override
 		public boolean test(Match o) {
-			return o.hasLabel("sc") || o.hasLabel("nsc");
+			String id = o.rule().label().id;
+			return id.equals("sc") || id.equals("nsc");
 		}
 	};
 
 	private static String convertString(Match m, String json) {
 		StringBuilder b = new StringBuilder();
 		for (Match child : m.get(scOrNsc)) {
-			if (child.hasLabel("sc"))
+			if (child.labelId("sc"))
 				convertSpecialCharacter(child, json, b);
 			else
 				convertOrdinaryCharacter(child, json, b);
@@ -679,14 +673,15 @@ public class Converter {
 
 	private static void convertOrdinaryCharacter(Match m, String json,
 			StringBuilder b) {
-		b.append(json.substring(m.start(), m.end()));
+		for (int i = m.start(), lim = m.end(); i < lim; i++)
+			b.append(json.charAt(i));
 	}
 
 	private static void convertSpecialCharacter(Match m, String json,
 			StringBuilder b) {
 		Match child = m.children()[0];
 		String s = json.substring(child.start(), child.end());
-		if (child.hasLabel("ue")) {
+		if (child.labelId("ue")) {
 			char c = (char) Integer.parseInt(s.substring(1), 16);
 			b.append(c);
 		} else {
