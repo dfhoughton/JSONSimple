@@ -3,6 +3,7 @@
     constraints
   * added convertion of short[] and char[], treating the latter as an array of
     strings
+  * various small optimizations
 
 0.26, 24 July 2012
   * added a bunch of pretty methods to simplify beautifying convertible
