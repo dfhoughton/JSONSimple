@@ -2,6 +2,8 @@ package dfh.json.simple.test;
 
 import static org.junit.Assert.*;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
@@ -20,8 +22,8 @@ public class StringToObject {
 			assertTrue("parsed to map", o instanceof Map<?, ?>);
 			@SuppressWarnings("unchecked")
 			Map<String, Object> map = (Map<String, Object>) o;
-			Double d = (Double) map.get("a");
-			assertTrue("", d.doubleValue() == foo);
+			BigDecimal d = (BigDecimal) map.get("a");
+			assertTrue(d.doubleValue() == foo);
 		} catch (JSONSimpleException e) {
 			fail(e.getMessage());
 		}
@@ -35,8 +37,23 @@ public class StringToObject {
 			assertTrue("parsed to map", o instanceof Map<?, ?>);
 			@SuppressWarnings("unchecked")
 			Map<String, Object> map = (Map<String, Object>) o;
-			Double d = (Double) map.get("a");
-			assertTrue("", d.doubleValue() == foo);
+			BigDecimal d = (BigDecimal) map.get("a");
+			assertTrue(d.doubleValue() == foo);
+		} catch (JSONSimpleException e) {
+			fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void numberTestBigInteger() {
+		try {
+			BigInteger bi = new BigInteger("1234567890");
+			Object o = Converter.convert("{\"a\":" + bi + "}");
+			assertTrue("parsed to map", o instanceof Map<?, ?>);
+			@SuppressWarnings("unchecked")
+			Map<String, Object> map = (Map<String, Object>) o;
+			BigInteger d = (BigInteger) map.get("a");
+			assertEquals(bi, d);
 		} catch (JSONSimpleException e) {
 			fail(e.getMessage());
 		}

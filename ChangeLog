@@ -1,4 +1,6 @@
 0.27
+  * made numeric classes BigInteger and BigDecimal to eliminate size
+    constraints
 
 0.26, 24 July 2012
   * added a bunch of pretty methods to simplify beautifying convertible

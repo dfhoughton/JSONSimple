@@ -1,5 +1,7 @@
 package dfh.json.simple;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -563,9 +565,9 @@ public class Converter {
 	private static Object convertNumber(Match child) {
 		child = child.children()[0];
 		if (child.hasLabel("int"))
-			return new Integer(child.group());
+			return new BigInteger(child.group());
 		else
-			return new Double(child.group());
+			return new BigDecimal(child.group());
 	}
 
 	@SuppressWarnings("serial")
