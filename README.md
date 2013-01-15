@@ -13,7 +13,24 @@ What it can do
 
 2. It can convert a Java `Map<String, Object>`, `List<Object>`, or `Object[]`, into a JSON string.
 
-3. The Objects must be of types `Map<String, Object>`, `List<Object>`, `Object[]`, `Integer`, `Number`, `String`, `Boolean`, or `null`. These are the types that may go in and will come out. In the case of `Number`, the subtype returned will be `BigDecimal`.
+3. The objects must be of types
+   * `Map<String, Object>`
+   * `List<Object>`
+   * `Object[]`
+   * `int[]`
+   * `long[]`
+   * `short[]`
+   * `byte[]`
+   * `double[]`
+   * `float[]`
+   * `char[]`
+   * `String`
+   * `Number`
+   * `boolean[]`
+   * `Boolean`
+   * `null`
+
+   In the first three cases, the `Object` must be some one of the more specific objects on the list. A `byte[]` is treated as a list of numbers. A `char[]` is treated as a list of strings. So as to avoid precision issues, JSON numbers are converted to either `BigInteger` or `BigDecimal` as appropriate.
 
 4. If you have a JSON string stripped of unnecessary whitespace and you want to make it human-readable, you can use the `String Converter.pretty(String)` method to add in missing whitespace and indentation. For example, it will convert the following rough JSON
 
