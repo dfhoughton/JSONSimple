@@ -1,6 +1,7 @@
 package dfh.json.example;
 
-import dfh.json.simple.Converter;
+import static dfh.json.simple.Converter.compress;
+import static dfh.json.simple.Converter.pretty;
 import dfh.json.simple.JSONSimpleException;
 
 public class BeautyAndConcision {
@@ -10,16 +11,16 @@ public class BeautyAndConcision {
 			+ "\t\"flynn\": {\"foo\":\"bar\",\"quux\"\n:\n[1,2,[3]]}}";
 
 	/**
-	 * @param args
+	 * @param args none
 	 * @throws JSONSimpleException
 	 */
 	public static void main(String[] args) throws JSONSimpleException {
 		System.out.println("rough JSON:");
 		System.out.println(roughJSON);
 		System.out.println("compact JSON:");
-		System.out.println(Converter.compress(roughJSON));
+		System.out.println(compress(roughJSON));
 		System.out.println("pretty JSON:");
-		System.out.println(Converter.pretty(roughJSON));
+		System.out.println(pretty(roughJSON));
 	}
 
 }
