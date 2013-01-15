@@ -95,9 +95,9 @@ public class Example {
 
 Result:
 
->original:       {"foo": 1 }
->modified:       {"foo":1,"bar":["a","b","c","d"]}
->modified again: {"foo":1,"bar":["a","b","c","d"],"quux":null}
+    original:       {"foo": 1 }
+    modified:       {"foo":1,"bar":["a","b","c","d"]}
+    modified again: {"foo":1,"bar":["a","b","c","d"],"quux":null}
 
 License
 -------
