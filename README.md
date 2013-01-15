@@ -17,10 +17,12 @@ What it can do
 
 4. If you have a JSON string stripped of unnecessary whitespace and you want to make it human-readable, you can use the `String Converter.pretty(String)` method to add in missing whitespace and indentation. For example, it will convert the following rough JSON
 
-       {"b"  : true, "a":1,  "grue":{"baz":1}, "c":null
-       ,"d"  :	[],"eleemosynary" :1.5, 	"flynn": {"foo":"bar","quux"
-       :
-       [1,2,[3]]}}
+   ```json
+   {"b"  : true, "a":1,  "grue":{"baz":1}, "c":null
+   ,"d"  :	[],"eleemosynary" :1.5, 	"flynn": {"foo":"bar","quux"
+   :
+   [1,2,[3]]}}
+   ```
 
    into
 
