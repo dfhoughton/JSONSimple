@@ -1,4 +1,4 @@
-0.27
+0.27, 15 January 2013
   * made numeric classes BigInteger and BigDecimal to eliminate size
     constraints
   * added convertion of short[] and char[], treating the latter as an array of
