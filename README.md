@@ -23,31 +23,34 @@ What it can do
    :
    [1,2,[3]]}}
    ```
-
    into
 
-       {"b":true,"a":1,"grue":{"baz":1},"c":null,"d":[],"eleemosynary":1.5,"flynn":{"foo":"bar","quux":[1,2,[3]]}}
+   ```json
+   {"b":true,"a":1,"grue":{"baz":1},"c":null,"d":[],"eleemosynary":1.5,"flynn":{"foo":"bar","quux":[1,2,[3]]}}
+   ```
 
 5. If you have a puffy JSON string that you want to compress, removing all unnecessary whitespace, you can pass it through `String Converter.compress(String)`. For example, it will convert the rough JSON above into
 
-       {
-          "a"     : 1,
-          "b"     : true,
-          "c"     : null,
-          "d"     : [ ],
-          "eleemosynary" : 1.5,
-          "flynn" : 
-             {
-                "foo"  : "bar",
-                "quux" : 
-                   [
-                      1,
-                      2,
-                      [ 3 ]
-                   ]
-             },
-          "grue"  : { "baz" : 1 }
-       }
+   ```json
+   {
+      "a"     : 1,
+      "b"     : true,
+      "c"     : null,
+      "d"     : [ ],
+      "eleemosynary" : 1.5,
+      "flynn" : 
+         {
+            "foo"  : "bar",
+            "quux" : 
+               [
+                  1,
+                  2,
+                  [ 3 ]
+               ]
+         },
+      "grue"  : { "baz" : 1 }
+   }
+   ```
 
 License
 -------
