@@ -105,6 +105,29 @@ public class BasicConversions {
 	}
 
 	@Test
+	public void charConversion1() {
+		Map<String, Object> map = new TreeMap<String, Object>();
+		map.put("a", 'a');
+		try {
+			assertEquals("char value", "{\"a\":\"a\"}", Converter.convert(map));
+		} catch (JSONSimpleException e) {
+			fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void charConversion2() {
+		Map<String, Object> map = new TreeMap<String, Object>();
+		map.put("a", '"');
+		try {
+			assertEquals("escaped char value", "{\"a\":\"\\\"\"}",
+					Converter.convert(map));
+		} catch (JSONSimpleException e) {
+			fail(e.getMessage());
+		}
+	}
+
+	@Test
 	public void arrayConversionEmpty() {
 		Map<String, Object> map = new TreeMap<String, Object>();
 		map.put("a", new Object[] {});

@@ -588,8 +588,7 @@ public class Converter {
 	private static final MatchTest stringOrValue = new MatchTest() {
 		@Override
 		public boolean test(Match m) {
-			return m.labelId("string")
-					|| m.labelId("value");
+			return m.labelId("string") || m.labelId("value");
 		}
 	};
 
@@ -827,8 +826,8 @@ public class Converter {
 			int margin) throws JSONSimpleException {
 		if (value == null)
 			b.append("null");
-		else if (value instanceof String)
-			convert((String) value, b);
+		else if (value instanceof String || value instanceof Character)
+			convert(value.toString(), b);
 		else if (value instanceof Number)
 			convert((Number) value, b);
 		else if (value instanceof Object[])
